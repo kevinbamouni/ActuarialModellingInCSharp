@@ -3,12 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data;
 using static System.Math;
 
 namespace BasicTermS
 {
     class Projection
     {
+        public DataRow ModelPoint;
+        public static DataTable MortTable;
+        public static DataTable DiscRateAnn;
+        
+        public Projection(DataRow paramModelPoint, DataTable paramMortTable, DataTable paramDiscRateAnn) {
+            ModelPoint = paramModelPoint;
+            MortTable = paramMortTable; //.AsEnumerable().Where(x=> x.Field<float>( == 2);
+            DiscRateAnn = paramDiscRateAnn;
+        }
+
         int age(int t)
         {
             return age_at_entry() + duration(t);
@@ -16,12 +27,12 @@ namespace BasicTermS
 
         int duration(int t)
         {
-            throw new NotImplementedException();
+            return t/12;
         }
 
         int age_at_entry()
         {
-            throw new NotImplementedException();
+            return ModelPoint.Field<int>("age_at_entry");
         }
 
         double claim_pp(int t)
@@ -106,7 +117,10 @@ namespace BasicTermS
 
         double mort_rate(int t)
         {
-            throw new NotImplementedException();
+            var lake = MortTable.AsEnumerable().Where(x => x.Field<float>("Age")== age(t))
+                .Select(x => x.Field<double>((Max(Min(5, duration(t)), 0)).ToString()));
+
+            return (Double) lake.FirstOrDefault();
         }
 
         double mort_rate_mth(int t)
@@ -141,7 +155,7 @@ namespace BasicTermS
 
         int policy_term()
         {
-            throw new NotImplementedException();
+            return ModelPoint.Field<int>("policy_term");
         }
 
         double pols_death(int t)
@@ -182,14 +196,14 @@ namespace BasicTermS
         {
             return 12 * policy_term() + 1;
         }
-        int sex()
+        char sex()
         {
-            throw new NotImplementedException();
+            return ModelPoint.Field<char>("sex");
         }
 
-        int sum_assured()
+        double sum_assured()
         {
-            throw new NotImplementedException();
+            return ModelPoint.Field<double>("sum_assured");
         }
     }
 

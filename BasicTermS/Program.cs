@@ -45,7 +45,7 @@ namespace BasicTermS
 
             var model_point = new DataTable();
             model_point.Columns.Add("point_id", typeof(int));
-            model_point.Columns.Add("age_at_entry", typeof(string));
+            model_point.Columns.Add("age_at_entry", typeof(int));
             model_point.Columns.Add("sex", typeof(string));
             model_point.Columns.Add("policy_term", typeof(string));
             model_point.Columns.Add("policy_count", typeof(string));
@@ -57,7 +57,7 @@ namespace BasicTermS
                 // Do any configuration to `CsvReader` before creating CsvDataReader.
                 using (var dr = new CsvDataReader(csv))
                 {
-                    disc_rate_ann.Load(dr);                    
+                    disc_rate_ann.Load(dr);
                 }
             }
 
@@ -81,9 +81,18 @@ namespace BasicTermS
                 }
             }
 
-            foreach (DataRow row in disc_rate_ann.Rows)
+            var query = from mp in model_point.AsEnumerable()
+                        join mr in mort_table.AsEnumerable()
+                           on mp.Field<int>("age_at_entry") equals
+                           mr.Field<int>("Age")
+                           select new { mp, mr };
+
+            //DataTable boundTable = query.ToDataTable<DataRow>();
+            
+
+            foreach (DataRow row in model_point.Rows)
             {
-                Console.WriteLine("{0,8} {1,8}", row["year"], row["zero_spot"]);
+                Console.WriteLine("{0,8} {1,8}", (int)row["age_at_entry"], row["sex"]);
             }
         }
     }
