@@ -5,19 +5,22 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using static System.Math;
+using System.Globalization;
+using CsvHelper;
+using CsvHelper.Configuration;
 
 namespace BasicTermS
 {
     class Projection
     {
         public DataRow ModelPoint;
-        public static DataTable MortTable;
-        public static DataTable DiscRateAnn;
+        public static DataTable MortTable = new Hypotheses("/Users/kevinbamouni/OneDrive/8-PROJETS/ActuarialModellingInCSharp/BasicTermS/Data/mort_table.csv").MortTable;
+        //public static DataTable DiscRateAnn;
         
-        public Projection(DataRow paramModelPoint, DataTable paramMortTable, DataTable paramDiscRateAnn) {
+        public Projection(DataRow paramModelPoint) {
             ModelPoint = paramModelPoint;
-            MortTable = paramMortTable; //.AsEnumerable().Where(x=> x.Field<float>( == 2);
-            DiscRateAnn = paramDiscRateAnn;
+        //    MortTable = paramMortTable; //.AsEnumerable().Where(x=> x.Field<float>( == 2);
+        //    DiscRateAnn = paramDiscRateAnn;
         }
 
         int age(int t)

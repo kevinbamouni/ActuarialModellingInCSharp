@@ -51,7 +51,7 @@ namespace BasicTermS
             model_point.Columns.Add("policy_count", typeof(string));
             model_point.Columns.Add("sum_assured", typeof(string));
 
-            using (var reader = new StreamReader("C:/Users/work/source/repos/ActuarialModellingInCSharp/BasicTermS/Data/disc_rate_ann.csv"))
+            using (var reader = new StreamReader("/Users/kevinbamouni/OneDrive/8-PROJETS/ActuarialModellingInCSharp/BasicTermS/Data/disc_rate_ann.csv"))
             using (var csv = new CsvReader(reader, config))
             {
                 // Do any configuration to `CsvReader` before creating CsvDataReader.
@@ -61,7 +61,7 @@ namespace BasicTermS
                 }
             }
 
-            using (var reader = new StreamReader("C:/Users/work/source/repos/ActuarialModellingInCSharp/BasicTermS/Data/mort_table.csv"))
+            using (var reader = new StreamReader("/Users/kevinbamouni/OneDrive/8-PROJETS/ActuarialModellingInCSharp/BasicTermS/Data/mort_table.csv"))
             using (var csv = new CsvReader(reader, config))
             {
                 // Do any configuration to `CsvReader` before creating CsvDataReader.
@@ -71,7 +71,7 @@ namespace BasicTermS
                 }
             }
 
-            using (var reader = new StreamReader("C:/Users/work/source/repos/ActuarialModellingInCSharp/BasicTermS/Data/model_point_table.csv"))
+            using (var reader = new StreamReader("/Users/kevinbamouni/OneDrive/8-PROJETS/ActuarialModellingInCSharp/BasicTermS/Data/model_point_table.csv"))
             using (var csv = new CsvReader(reader, config))
             {
                 // Do any configuration to `CsvReader` before creating CsvDataReader.
