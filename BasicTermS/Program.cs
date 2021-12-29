@@ -36,12 +36,12 @@ namespace BasicTermS
 
             var mort_table = new DataTable();
             mort_table.Columns.Add("Age", typeof(int));
-            mort_table.Columns.Add("0", typeof(string));
-            mort_table.Columns.Add("1", typeof(string));
-            mort_table.Columns.Add("2", typeof(string));
-            mort_table.Columns.Add("3", typeof(string));
-            mort_table.Columns.Add("4", typeof(string));
-            mort_table.Columns.Add("5", typeof(string));
+            mort_table.Columns.Add("0", typeof(float));
+            mort_table.Columns.Add("1", typeof(float));
+            mort_table.Columns.Add("2", typeof(float));
+            mort_table.Columns.Add("3", typeof(float));
+            mort_table.Columns.Add("4", typeof(float));
+            mort_table.Columns.Add("5", typeof(float));
 
             var model_point = new DataTable();
             model_point.Columns.Add("point_id", typeof(int));
@@ -88,11 +88,19 @@ namespace BasicTermS
                            select new { mp, mr };
 
             //DataTable boundTable = query.ToDataTable<DataRow>();
-            
-
-            foreach (DataRow row in model_point.Rows)
+            foreach (DataRow row in mort_table.Rows)
             {
-                Console.WriteLine("{0,8} {1,8}", (int)row["age_at_entry"], row["sex"]);
+                //Console.WriteLine("{0,-12} {1,-12} {1,-12} {1,-12} {1,-12} {1,-12}", (int)row["Age"], row["0"], row["1"], row["2"], row["3"], row["4"], row["5"]);
+                break;
+            }
+
+            // Test de la fonctionnalité des hypothèses
+            Hypotheses testhypo = new Hypotheses("/Users/kevinbamouni/OneDrive/8-PROJETS/ActuarialModellingInCSharp/BasicTermS/Data/mort_table.csv", @"{""Age"":""int"",""0"":""float"",""1"":""float"",""2"":""float"",""3"":""float"",""4"":""float"",""5"":""float""}");
+            Console.WriteLine(testhypo.PathMortTable);
+            Console.WriteLine(testhypo.DataSchema);
+            foreach (DataRow row in testhypo.MortTable.Rows)
+            {
+                Console.WriteLine("{0,-12} {1,-12} {1,-12} {1,-12} {1,-12} {1,-12}", (int)row["Age"], row["0"], row["1"], row["2"], row["3"], row["4"], row["5"]);
             }
         }
     }

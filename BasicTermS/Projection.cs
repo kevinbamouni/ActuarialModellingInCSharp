@@ -14,11 +14,13 @@ namespace BasicTermS
     class Projection
     {
         public DataRow ModelPoint;
-        public static DataTable MortTable = new Hypotheses("/Users/kevinbamouni/OneDrive/8-PROJETS/ActuarialModellingInCSharp/BasicTermS/Data/mort_table.csv").MortTable;
+        //public static DataTable MortTable = new Hypotheses("/Users/kevinbamouni/OneDrive/8-PROJETS/ActuarialModellingInCSharp/BasicTermS/Data/mort_table.csv", @"{""Age"":""int"",""0"":""float"",""1"":""float"",""2"":""float"",""3"":""float"",""4"":""float"",""5"":""float""}").MortTable;
+        public static Hypotheses? Hypothesis;
         //public static DataTable DiscRateAnn;
-        
-        public Projection(DataRow paramModelPoint) {
+
+        public Projection(DataRow paramModelPoint, Hypotheses paramHypothesis) {
             ModelPoint = paramModelPoint;
+            Hypothesis = paramHypothesis;
         //    MortTable = paramMortTable; //.AsEnumerable().Where(x=> x.Field<float>( == 2);
         //    DiscRateAnn = paramDiscRateAnn;
         }
@@ -120,10 +122,10 @@ namespace BasicTermS
 
         double mort_rate(int t)
         {
-            var lake = MortTable.AsEnumerable().Where(x => x.Field<float>("Age")== age(t))
+            var mortRate = Hypothesis.MortTable.AsEnumerable().Where(x => x.Field<float>("Age")== age(t))
                 .Select(x => x.Field<double>((Max(Min(5, duration(t)), 0)).ToString()));
 
-            return (Double) lake.FirstOrDefault();
+            return (Double)mortRate.FirstOrDefault();
         }
 
         double mort_rate_mth(int t)

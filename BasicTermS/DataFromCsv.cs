@@ -37,14 +37,12 @@ namespace BasicTermS
             return result;
         }
 
-        //
         // Params :
         //
         // Dictionary<string, string> paramColumnDictionnary = {"ColumnName1":"ColumnType1",
         //                                                      "ColumnName2":"ColumnType2",
         //                                                      "ColumnName3":"ColumnType3",
         //                                                      ...}
-        //
         public static DataTable AddColumnWithType(DataTable paramDataTable, Dictionary<string, string> paramColumnDictionnary)
         {
             foreach(var item in paramColumnDictionnary)

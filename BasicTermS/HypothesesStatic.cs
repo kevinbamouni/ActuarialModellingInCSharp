@@ -7,21 +7,12 @@ using Newtonsoft.Json;
 
 namespace BasicTermS
 {
-    public class Hypotheses
+    public static class HypothesesStatic
     {
-        public DataTable MortTable;
-        public string PathMortTable;
-        public string DataSchema;
-
-        public Hypotheses(string pathMortTable, string dataSchema)
+        public static DataTable ReadMortalityTable(string pathMortTable, string dataSchema)
         {
-            PathMortTable = pathMortTable;
-            DataSchema = dataSchema;
-            MortTable = new DataTable();
-
-            //Dictionary<string, string> columns = new Dictionary<string, string>(){{"Age","int"},{"0","float"},{"1","float"},{"2","float"},{"3","float"},{"4","float"},{"5","float"}};
-            //string schemacolumn = @"{""Age"":""int"",""0"":""float"",""1"":""float"",""2"":""float"",""3"":""float"",""4"":""float"",""5"":""float""}";
-            Dictionary<string, string> schemas = JsonConvert.DeserializeObject<Dictionary<string, string>>(DataSchema);
+            DataTable MortTable = new DataTable();
+            Dictionary<string, string> schemas = JsonConvert.DeserializeObject<Dictionary<string, string>>(dataSchema);
             MortTable = DataFromCsv.AddColumnWithType(MortTable, schemas);
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
@@ -39,6 +30,8 @@ namespace BasicTermS
                     MortTable.Load(dr);
                 }
             }
+
+            return MortTable;
         }
     }
 }
