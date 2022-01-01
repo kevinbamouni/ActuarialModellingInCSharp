@@ -14,15 +14,12 @@ namespace BasicTermS
     class Projection
     {
         public DataRow ModelPoint;
-        //public static DataTable MortTable = new Hypotheses("/Users/kevinbamouni/OneDrive/8-PROJETS/ActuarialModellingInCSharp/BasicTermS/Data/mort_table.csv", @"{""Age"":""int"",""0"":""float"",""1"":""float"",""2"":""float"",""3"":""float"",""4"":""float"",""5"":""float""}").MortTable;
-        public static Hypotheses? Hypothesis;
-        //public static DataTable DiscRateAnn;
+        public static DataTable MortTable = DataFromCsv.ReadDataTableFromCsv(Tables.PathMortRate, Tables.SchemasMortRate);
+        public static DataTable DiscRateAnn = DataFromCsv.ReadDataTableFromCsv(Tables.PathDiscountRate, Tables.SchemasDiscountRate);
 
-        public Projection(DataRow paramModelPoint, Hypotheses paramHypothesis) {
+        public Projection(DataRow paramModelPoint) {
             ModelPoint = paramModelPoint;
-            Hypothesis = paramHypothesis;
-        //    MortTable = paramMortTable; //.AsEnumerable().Where(x=> x.Field<float>( == 2);
-        //    DiscRateAnn = paramDiscRateAnn;
+            //MortTable = paramMortTable; //.AsEnumerable().Where(x=> x.Field<float>( == 2);
         }
 
         int age(int t)
@@ -77,9 +74,8 @@ namespace BasicTermS
             double maint = pols_if(t) * expense_maint() / 12 * inflation_factor(t);
 
             if (t == 0) {
-                return expense_acq() + maint; } 
-            else { return expense_maint(); }
-                
+                return expense_acq() + maint;} 
+            else { return expense_maint(); }              
         }
 
         double pols_if(int t)
@@ -91,6 +87,7 @@ namespace BasicTermS
 
         double pols_if_init()
         {
+            //return ModelPoint.Field<double>("policy_count");
             return 1;
         }
 
@@ -117,13 +114,13 @@ namespace BasicTermS
 
         int model_point()
         {
-            throw new NotImplementedException();
+            return ModelPoint.Field<int>("point_id");
         }
 
         double mort_rate(int t)
         {
-            var mortRate = Hypothesis.MortTable.AsEnumerable().Where(x => x.Field<float>("Age")== age(t))
-                .Select(x => x.Field<double>((Max(Min(5, duration(t)), 0)).ToString()));
+            var mortRate = MortTable.AsEnumerable().Where(x => x.Field<double>("Age")== age(t))
+                .Select(x => x.Field<double>((Max(Min(5, duration(t)), 0))));
 
             return (Double)mortRate.FirstOrDefault();
         }
@@ -138,9 +135,9 @@ namespace BasicTermS
             return premiums(t) - claims(t) - expenses(t) - commissions(t);
         }
 
-        private double claims(int t)
+        double claims(int t)
         {
-            throw new NotImplementedException();
+            return claim_pp(t)*pols_death(t);
         }
 
         double net_premium_pp()
@@ -168,9 +165,9 @@ namespace BasicTermS
             return pols_if(t) * mort_rate_mth(t);
         }
 
-        int pols_if_init(int t)
+        double pols_if_init(int t)
         {
-            return 1;
+            return ModelPoint.Field<double>("policy_count");
         }
 
         double pols_lapse(int t)

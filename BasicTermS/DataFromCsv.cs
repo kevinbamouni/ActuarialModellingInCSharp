@@ -52,6 +52,30 @@ namespace BasicTermS
             return paramDataTable;
         }
 
+        public static DataTable ReadDataTableFromCsv(string pathToCsvFile, string dataSchema)
+        {
+            DataTable DataTable = new DataTable();
+            Dictionary<string, string> schemas = JsonConvert.DeserializeObject<Dictionary<string, string>>(dataSchema);
+            DataTable = DataFromCsv.AddColumnWithType(DataTable, schemas);
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                NewLine = Environment.NewLine,
+                Delimiter = ";",
+                HasHeaderRecord = true,
+            };
+
+            using (var reader = new StreamReader(pathToCsvFile))
+            using (var csv = new CsvReader(reader, config))
+            {
+                // Do any configuration to `CsvReader` before creating CsvDataReader.
+                using (var dr = new CsvDataReader(csv))
+                {
+                    DataTable.Load(dr);
+                }
+            }
+
+            return DataTable;
+        }
     }
 }
 
