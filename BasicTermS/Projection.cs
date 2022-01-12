@@ -208,5 +208,4 @@ namespace BasicTermS
             return ModelPoint.Field<double>("sum_assured");
         }
     }
-
 }

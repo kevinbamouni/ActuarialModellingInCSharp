@@ -4,6 +4,7 @@ using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace BasicTermS
 {
@@ -26,7 +27,7 @@ namespace BasicTermS
                     result = typeof(float);
                     break;
                 case "double":
-                    result = typeof(double);
+                    result = typeof(Double);
                     break;
                 case "decimal":
                     result = typeof(decimal);
@@ -64,18 +65,34 @@ namespace BasicTermS
                 HasHeaderRecord = true,
             };
 
-            using (var reader = new StreamReader(pathToCsvFile))
-            using (var csv = new CsvReader(reader, config))
+            try
             {
-                // Do any configuration to `CsvReader` before creating CsvDataReader.
-                using (var dr = new CsvDataReader(csv))
+                using (var reader = new StreamReader(pathToCsvFile))
+                using (var csv = new CsvReader(reader, config))
                 {
-                    DataTable.Load(dr);
+                    // Do any configuration to `CsvReader` before creating CsvDataReader.
+                    using (var dr = new CsvDataReader(csv))
+                    {
+                        try
+                        {
+                            DataTable.Load(dr);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("File -->  " + pathToCsvFile);
+                            Console.WriteLine("Schemas -->  " + dataSchema);
+                            Console.WriteLine(ex.ToString());
+                        }                        
+                    }
                 }
+            }
+            catch (System.IO.DirectoryNotFoundException dirEx)
+            {
+                // Let the user know that the directory did not exist.
+                Console.WriteLine("Directory not found: " + dirEx.Message);
             }
 
             return DataTable;
         }
     }
 }
-
