@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Globalization;
-using CsvHelper;
-using CsvHelper.Configuration;
 
 namespace BasicTermS
 {
