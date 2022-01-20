@@ -3,7 +3,6 @@ using System.Data;
 using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
-using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace BasicTermS
@@ -27,6 +26,9 @@ namespace BasicTermS
                     result = typeof(float);
                     break;
                 case "double":
+                    result = typeof(double);
+                    break;
+                case "Double":
                     result = typeof(Double);
                     break;
                 case "decimal":
@@ -55,11 +57,16 @@ namespace BasicTermS
 
         public static DataTable ReadDataTableFromCsv(string pathToCsvFile, string dataSchema)
         {
-            DataTable DataTable = new DataTable();
+            DataTable dataTable = new DataTable();
             Dictionary<string, string> schemas = JsonConvert.DeserializeObject<Dictionary<string, string>>(dataSchema);
-            DataTable = DataFromCsv.AddColumnWithType(DataTable, schemas);
-            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
+            dataTable = DataFromCsv.AddColumnWithType(dataTable, schemas);
+
+            //CultureInfo cultureInfo = new CultureInfo("en-US", false);
+            //cultureInfo.NumberFormat.NumberDecimalSeparator = ".";
+            //cultureInfo.TextInfo.ListSeparator = ";";
+            //cultureInfo.NumberFormat.NumberDecimalDigits = 9;
+
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture){
                 NewLine = Environment.NewLine,
                 Delimiter = ";",
                 HasHeaderRecord = true,
@@ -75,7 +82,7 @@ namespace BasicTermS
                     {
                         try
                         {
-                            DataTable.Load(dr);
+                            dataTable.Load(dr);
                         }
                         catch (Exception ex)
                         {
@@ -92,7 +99,7 @@ namespace BasicTermS
                 Console.WriteLine("Directory not found: " + dirEx.Message);
             }
 
-            return DataTable;
+            return dataTable;
         }
     }
 }

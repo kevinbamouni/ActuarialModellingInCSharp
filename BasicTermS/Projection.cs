@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
 using static System.Math;
 
 
@@ -11,7 +12,7 @@ namespace BasicTermS
         public static DataTable MortTable = DataFromCsv.ReadDataTableFromCsv(Tables.PathMortRate, Tables.SchemasMortRate);
         public static DataTable DiscRateAnn = DataFromCsv.ReadDataTableFromCsv(Tables.PathDiscountRate, Tables.SchemasDiscountRate);
 
-        public Projection(DataRow paramModelPoint) {
+        public Projection(DataRow paramModelPoint){
             ModelPoint = paramModelPoint;
             //MortTable = paramMortTable; //.AsEnumerable().Where(x=> x.Field<float>( == 2);
         }
@@ -157,15 +158,16 @@ namespace BasicTermS
         // TODO
         double mort_rate(int t)
         {
-            var mortRate = MortTable.AsEnumerable().Where(x => x.Field<double>("Age")== age(t))
-                .Select(x => x.Field<double>((Max(Min(5, duration(t)), 0)).ToString()));
+            //var mortRate = MortTable.AsEnumerable().Where(x => x.Field<int>("Age")== (double)age(t))
+            //    .Select(x => x.Field<Double>((Max(Min(5, duration(t)), 0)).ToString()));
+            string col = (Max(Min(5, duration(t)), 0)).ToString();
+            var mt = from to in MortTable.AsEnumerable() 
+                     where to.Field<int>("Age") == age(t) 
+                     select to.Field<Double>(col);
+            //var res = from mot in mt select (double)(mot.Field<double>(col));
+            var a = mt.ToList<Double>()[0];
 
-            //var tableau = MortTable.AsEnumerable();
-            //tableau = from to in tableau where to.Field<double>("Age") == age(t) select to;
-            //string col = (Max(Min(5, duration(t)), 0)).ToString();
-            //var res = from to in tableau select to.Field<double>(col);
-
-            return (Double)mortRate.FirstOrDefault();
+            return 0.001;
         }
 
         // OK
@@ -192,22 +194,11 @@ namespace BasicTermS
             return pv_claims() / pv_pols_if();
         }
 
-        // TODO
-        int pv_pols_if()
-        {
-            return 0;
-        }
-
-        // TODO
-        int pv_claims()
-        {
-            return 0;
-        }
-
         // OK
         int policy_term()
         {
-            return ModelPoint.Field<int>("policy_term");
+            int a = ModelPoint.Field<int>("policy_term");
+            return a;
         }
 
         // OK
@@ -247,11 +238,12 @@ namespace BasicTermS
         // OK
         int proj_len()
         {
-            return 12 * policy_term() + 1;
+            int a = 12 * policy_term() + 1;
+            return a;
         }
 
         // TODO
-        Dictionary<string, List<double>> result_cf()
+        public Dictionary<string, List<double>> result_cf()
         {
             List<double> vpolsid = new List<double>();
             List<double> vpremiums = new List<double>();
@@ -259,15 +251,15 @@ namespace BasicTermS
             List<double> vexpenses = new List<double>();
             List<double> vcommissions = new List<double>();
             List<double> vNetCashflow = new List<double>();
-
-            for (int i = 0; i < proj_len(); i++)
+            int len = proj_len();
+            for (int i = 0; i < len; i++)
             {
                 vpolsid.Add(model_point());
                 vpremiums.Add(premiums(i));
-                vclaims.Add(premiums(i));
-                vexpenses.Add(premiums(i));
-                vcommissions.Add(premiums(i));
-                vNetCashflow.Add(premiums(i));
+                vclaims.Add(claims(i));
+                vexpenses.Add(expenses(i));
+                vcommissions.Add(commissions(i));
+                vNetCashflow.Add(net_cf(i));
             }
 
             Dictionary<string, List<double>> result = new Dictionary<string, List<double>> {
@@ -282,31 +274,43 @@ namespace BasicTermS
         }
 
         // TODO
+        int pv_pols_if()
+        {
+            return 1;
+        }
+
+        // TODO
+        int pv_claims()
+        {
+            return 1;
+        }
+
+        // TODO
         double pv_commissions()
         {
-            return 0;
+            return 1;
         }
         // TODO
         double pv_expenses()
         {
-            return 0;
+            return 1;
         }
 
         // TODO
         double pv_net_cf()
         {
-            return 0;
+            return 1;
         }
 
         // TODO
         double pv_premiums()
         {
-            return 0;
+            return 1;
         }
         // TODO
         double result_pv()
         {
-            return 0;
+            return 1;
         }  
     }
 }
