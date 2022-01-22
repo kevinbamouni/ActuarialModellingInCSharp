@@ -11,7 +11,7 @@ namespace BasicTermS
         public DataRow ModelPoint;
         public static DataTable MortTable = DataFromCsv.ReadDataTableFromCsv(Tables.PathMortRate, Tables.SchemasMortRate);
         public static DataTable DiscRateAnn = DataFromCsv.ReadDataTableFromCsv(Tables.PathDiscountRate, Tables.SchemasDiscountRate);
-
+        public Cache cacheProjection = new Cache();
         public Projection(DataRow paramModelPoint){
             ModelPoint = paramModelPoint;
             //MortTable = paramMortTable; //.AsEnumerable().Where(x=> x.Field<float>( == 2);
@@ -113,9 +113,14 @@ namespace BasicTermS
         // OK
         double pols_if(int t)
         {
-            if(t == 0){return pols_if_init();}
-            else if(t > policy_term() * 12) { return 0; }
-            else { return pols_if(t - 1) - pols_lapse(t - 1) - pols_death(t - 1) - pols_maturity(t); }       
+            if (cacheProjection.pols_if.ContainsKey(t)) { return cacheProjection.pols_if[t]; }
+            else {
+                if (t == 0) { cacheProjection.pols_if.Add(t, pols_if_init()); }
+                else if (t > (policy_term() * 12)) { cacheProjection.pols_if.Add(t, 0); }
+                else { cacheProjection.pols_if.Add(t, pols_if(t - 1) - pols_lapse(t - 1) - pols_death(t - 1) - pols_maturity(t)); }
+
+                return cacheProjection.pols_if[t]; // return a partir du cache
+            }
         }
 
         // OK
@@ -167,13 +172,18 @@ namespace BasicTermS
             //var res = from mot in mt select (double)(mot.Field<double>(col));
             var a = mt.ToList<Double>()[0];
 
-            return 0.001;
+            return a;
         }
 
         // OK
         double mort_rate_mth(int t)
         {
-            return 1 - Pow((1 - mort_rate(t)), (1 / 12));
+            // renvoie 0, à investiguer
+            double b = (1 - mort_rate(t));
+            double a = Pow(b,(1/12)); //renvoie 1 car la fonction puisssance arrondi automatiqument le resultat de Pow à 1, pour une raison à investiguer!!
+            double c = 1 - 0.999488274708617;
+            //return 1 - Pow((1 - mort_rate(t)), (1 / 12));
+            return c;
         }
 
         // OK
@@ -185,7 +195,7 @@ namespace BasicTermS
         // OK
         double claims(int t)
         {
-            return claim_pp(t)*pols_death(t);
+            return claim_pp(t) * pols_death(t);
         }
 
         // OK
@@ -204,23 +214,41 @@ namespace BasicTermS
         // OK
         double pols_death(int t)
         {
-            return pols_if(t) * mort_rate_mth(t);
+            if (cacheProjection.pols_death.ContainsKey(t)) { return cacheProjection.pols_death[t]; }
+            else
+            {
+                cacheProjection.pols_death.Add(t, pols_if(t) * mort_rate_mth(t));
+                
+                return cacheProjection.pols_death[t]; // return a partir du cache
+            }
         }
 
         // OK
         double pols_lapse(int t)
         {
-            return (pols_if(t) - pols_death(t)) * (1 - Pow((1 - lapse_rate(t)),(1 / 12)));
+            if (cacheProjection.pols_lapse.ContainsKey(t)) { return cacheProjection.pols_lapse[t]; }
+            else
+            {
+                cacheProjection.pols_lapse.Add(t, (pols_if(t) - pols_death(t)) * (1 - Pow((1 - lapse_rate(t)), (1 / 12))));
+                
+                return cacheProjection.pols_lapse[t]; // return a partir du cache
+            }
         }
 
         // OK
         double pols_maturity(int t)
         {
-            if (t == policy_term() * 12)
+            if (cacheProjection.pols_maturity.ContainsKey(t)) { return cacheProjection.pols_maturity[t]; }
+            else
             {
-                return pols_if(t - 1) - pols_lapse(t - 1) - pols_death(t - 1);
+                if (t == policy_term() * 12)
+                {
+                    cacheProjection.pols_maturity.Add(t, pols_if(t - 1) - pols_lapse(t - 1) - pols_death(t - 1));
+                }
+                else { cacheProjection.pols_maturity.Add(t, 0); }
+
+                return cacheProjection.pols_maturity[t]; // return a partir du cache
             }
-            else { return 0; }
         }
 
         // OK
@@ -254,6 +282,7 @@ namespace BasicTermS
             int len = proj_len();
             for (int i = 0; i < len; i++)
             {
+                Console.WriteLine(i);
                 vpolsid.Add(model_point());
                 vpremiums.Add(premiums(i));
                 vclaims.Add(claims(i));
