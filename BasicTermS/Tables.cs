@@ -13,5 +13,7 @@ namespace BasicTermS
         public static string SchemasModelPoint = @"{""point_id"":""int"",""age_at_entry"":""int"",""sex"":""string"",""policy_term"":""int"",""policy_count"":""double"",""sum_assured"":""double""}";
         
         public static string PathModelPointTest = @"C:\Users\work\source\repos\ActuarialModellingInCSharp\BasicTermS\Data\model_point_table_test.csv";
+
+        public static string results = @"C:\Users\work\source\repos\ActuarialModellingInCSharp\BasicTermS\Data\results.csv";
     }
 }

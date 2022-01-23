@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Data;
+using System.Collections.Concurrent;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace BasicTermS
 {
@@ -43,14 +45,27 @@ namespace BasicTermS
             //    //Console.WriteLine("{0,-10} {1,-10} {2,-10} {3,-10} {4,-10} {5,-10}", row["point_id"], row["age_at_entry"], row["sex"], row["policy_term"], row["policy_count"], row["sum_assured"]);
             //}
 
-            Dictionary<string, List<double>> results_run = new Dictionary<string, List<double>>();
-            DataTable modelpointest = DataFromCsv.ReadDataTableFromCsv(Tables.PathModelPointTest, Tables.SchemasModelPoint);
-            foreach (DataRow row in modelpointest.Rows)
-            {
-                Projection proj = new Projection(row);
-                results_run = proj.result_cf();
-                //break;
-            }
+            //Dictionary<string, List<double>> results_run = new Dictionary<string, List<double>>();
+            //ConcurrentDictionary<string, List<double>> concurrentresult = new ConcurrentDictionary<string, List<double>>();
+            ConcurrentDictionary<int, Dictionary<string, List<double>>> concurrentresult = new ConcurrentDictionary<int, Dictionary<string, List<double>>>();
+            DataTable modelpointest = DataFromCsv.ReadDataTableFromCsv(Tables.PathModelPoint, Tables.SchemasModelPoint);
+            int dickey = 0;
+            
+            //foreach (DataRow row in modelpointest.Rows)
+            //{
+            //    Projection proj = new Projection(row);
+            //    results_run = proj.result_cf();
+            //    //break;
+            //}
+
+            Parallel.ForEach(modelpointest.AsEnumerable(), modelpointestrow => 
+            { 
+                Projection proj = new Projection(modelpointestrow);
+                concurrentresult.AddOrUpdate(dickey, proj.result_cf(), (key, oldValue) => proj.result_cf());
+                dickey++;
+            });
+
+            //File.WriteAllLines(Tables.results, concurrentresult.Select(kvp => string.Format("{{0}:{1} \n}", concurrentresult.Keys, concurrentresult.Values)));
         }
     }
 }

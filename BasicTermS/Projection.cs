@@ -182,8 +182,9 @@ namespace BasicTermS
             double b = (1 - mort_rate(t));
             double a = Pow(b,(1/12)); //renvoie 1 car la fonction puisssance arrondi automatiqument le resultat de Pow à 1, pour une raison à investiguer!!
             double c = 1 - 0.999488274708617;
+            double d = mort_rate(t) / 12;
             //return 1 - Pow((1 - mort_rate(t)), (1 / 12));
-            return c;
+            return d;
         }
 
         // OK
