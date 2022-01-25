@@ -14,6 +14,6 @@ namespace BasicTermS
         
         public static string PathModelPointTest = @"C:\Users\work\source\repos\ActuarialModellingInCSharp\BasicTermS\Data\model_point_table_test.csv";
 
-        public static string results = @"C:\Users\work\source\repos\ActuarialModellingInCSharp\BasicTermS\Data\results.csv";
+        public static string results = @"C:\Users\work\source\repos\ActuarialModellingInCSharp\BasicTermS\Data\results.json";
     }
 }

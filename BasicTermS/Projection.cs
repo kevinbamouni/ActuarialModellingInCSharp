@@ -283,7 +283,6 @@ namespace BasicTermS
             int len = proj_len();
             for (int i = 0; i < len; i++)
             {
-                Console.WriteLine(i);
                 vpolsid.Add(model_point());
                 vpremiums.Add(premiums(i));
                 vclaims.Add(claims(i));
