@@ -1,5 +1,4 @@
-﻿using System;
-namespace BasicTermS
+﻿namespace BasicTermS
 {
     public static class Tables
     {

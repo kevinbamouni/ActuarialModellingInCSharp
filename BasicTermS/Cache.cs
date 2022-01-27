@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace BasicTermS
 {
     internal class Cache
@@ -28,11 +23,19 @@ namespace BasicTermS
         public Dictionary<int, double> pols_lapse { get; set; }
         public Dictionary<int, double> pols_if { get; set; } 
         public Dictionary<int, double> pols_maturity { get; set; }
+        public Dictionary<int, double> premiums { get; set; }
+        public Dictionary<int, double> claims { get; set; }
+        public Dictionary<int, double> expenses { get; set; }
+        public Dictionary<int, double> commissions { get; set; }
         public Cache() {
             pols_maturity = new Dictionary<int, double>();
             pols_lapse = new Dictionary<int, double>();
             pols_if = new Dictionary<int, double>();
             pols_death = new Dictionary<int, double>();
+            premiums = new Dictionary<int, double>();
+            claims = new Dictionary<int, double>();
+            expenses = new Dictionary<int, double>();
+            commissions = new Dictionary<int, double>();
         }
     }
 }

@@ -56,18 +56,26 @@ namespace BasicTermS
         // OK
         double commissions(int t)
         {
-            if(duration(t) == 0){
-                return premiums(t); } 
-            else { return 0; }
+            if (cacheProjection.commissions.ContainsKey(t)) { return cacheProjection.commissions[t]; }
+            else
+            {
+                if (duration(t) == 0)
+                {
+                    cacheProjection.commissions.Add(t, premiums(t));
+                }
+                else { cacheProjection.commissions.Add(t, 0.0); }
+                return cacheProjection.commissions[t];
+            }
         }
 
         // TODO
         List<double> disc_factors()
         {
             List<double> rates = new List<double>();
+            List<double> drm = disc_rate_mth();
             for (int i = 0; i < proj_len(); i++)
             {
-                rates.Add(1+Pow(disc_rate_mth()[i],-i));
+                rates.Add(Pow((1+drm[i]),-i));
             }
             return rates;
         }
@@ -79,7 +87,7 @@ namespace BasicTermS
             for (int i = 0; i < proj_len(); i++) {
                 var val = from row in DiscRateAnn.AsEnumerable()
                           where row.Field<int>("year") == i % 12
-                          select (double)(Pow(1 + row.Field<double>("zero_spot"), 1 / 12) - 1);
+                          select (double)(Pow(1 + row.Field<double>("zero_spot")/12, 1) - 1);
                 rates.Add(val.FirstOrDefault<double>());
             }
             //var val = from row in DiscRateAnn.AsEnumerable()
@@ -103,11 +111,15 @@ namespace BasicTermS
         // OK
         double expenses(int t)
         {
-            double maint = pols_if(t) * expense_maint() / 12 * inflation_factor(t);
-
-            if (t == 0) {
-                return expense_acq() + maint;} 
-            else { return maint; }              
+            if (cacheProjection.expenses.ContainsKey(t)) { return cacheProjection.expenses[t]; }
+            else {
+                if (t == 0)
+                {
+                    cacheProjection.expenses.Add(t, expense_acq() + pols_if(t) * expense_maint() / 12 * inflation_factor(t));
+                }
+                else { cacheProjection.expenses.Add(t, pols_if(t) * expense_maint() / 12 * inflation_factor(t)); }
+                return cacheProjection.expenses[t];
+            }
         }
 
         // OK
@@ -196,7 +208,12 @@ namespace BasicTermS
         // OK
         double claims(int t)
         {
-            return claim_pp(t) * pols_death(t);
+            if (cacheProjection.claims.ContainsKey(t)) { return cacheProjection.claims[t]; }
+            else
+            {
+                cacheProjection.claims.Add(t, claim_pp(t) * pols_death(t));
+                return cacheProjection.claims[t]; // return a partir du cache
+            }
         }
 
         // OK
@@ -231,7 +248,6 @@ namespace BasicTermS
             else
             {
                 cacheProjection.pols_lapse.Add(t, (pols_if(t) - pols_death(t)) * (1 - Pow((1 - lapse_rate(t)), (1 / 12))));
-                
                 return cacheProjection.pols_lapse[t]; // return a partir du cache
             }
         }
@@ -247,7 +263,6 @@ namespace BasicTermS
                     cacheProjection.pols_maturity.Add(t, pols_if(t - 1) - pols_lapse(t - 1) - pols_death(t - 1));
                 }
                 else { cacheProjection.pols_maturity.Add(t, 0); }
-
                 return cacheProjection.pols_maturity[t]; // return a partir du cache
             }
         }
@@ -261,7 +276,12 @@ namespace BasicTermS
         // OK
         double premiums(int t)
         {
-            return premium_pp() * pols_if(t);
+            if (cacheProjection.premiums.ContainsKey(t)) { return cacheProjection.premiums[t]; }
+            else
+            {
+                cacheProjection.premiums.Add(t, premium_pp() * pols_if(t));
+                return cacheProjection.premiums[t]; // return a partir du cache
+            }
         }
 
         // OK
@@ -297,7 +317,8 @@ namespace BasicTermS
                 {"claims",vclaims},
                 {"expenses",vexpenses},
                 {"commissions",vcommissions},
-                {"Net_Cashflow",vNetCashflow}};
+                {"NetCashflow",vNetCashflow},
+                {"DiscountFactor",disc_factors()}};
 
             return result;
         }
@@ -309,37 +330,77 @@ namespace BasicTermS
         }
 
         // TODO
-        int pv_claims()
+        double pv_claims()
         {
-            return 1;
+            double pv = 0;
+            int i = 0;
+            List<double> df = disc_factors();
+            foreach (var item in cacheProjection.claims)
+            {
+                pv = pv + item.Value * df[i];
+                i++;
+            }
+            return pv;
         }
 
         // TODO
         double pv_commissions()
         {
-            return 1;
+            double pv = 0;
+            int i = 0;
+            List<double> df = disc_factors();
+            foreach (var item in cacheProjection.commissions)
+            {
+                pv = pv + item.Value * df[i];
+                i++;
+            }
+            return pv;
         }
         // TODO
         double pv_expenses()
         {
-            return 1;
+            double pv = 0;
+            int i = 0;
+            List<double> df = disc_factors();
+            foreach (var item in cacheProjection.expenses)
+            {
+                pv = pv + item.Value * df[i];
+                i++;
+            }
+            return pv;
         }
 
         // TODO
         double pv_net_cf()
         {
-            return 1;
+            return pv_premiums()-pv_claims()-pv_expenses()-pv_commissions();
         }
 
         // TODO
         double pv_premiums()
         {
-            return 1;
+            double pv = 0;
+            int i = 0;
+            List<double> df = disc_factors();
+            foreach (var item in cacheProjection.premiums)
+            {
+                pv = pv + item.Value*df[i];
+                i++;
+            }
+            return pv;
         }
         // TODO
-        double result_pv()
+        public Dictionary<string, double> result_pv()
         {
-            return 1;
+            Dictionary<string, double> resultpv = new Dictionary<string, double> {
+                {"pols_id",model_point()},
+                {"premiums",pv_premiums()},
+                {"claims",pv_claims()},
+                {"expenses",pv_expenses()},
+                {"commissions",pv_commissions()},
+                {"Net_Cashflow",pv_net_cf()}};
+
+            return resultpv;
         }  
     }
 }
