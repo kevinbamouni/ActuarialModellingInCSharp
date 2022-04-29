@@ -10,12 +10,16 @@ namespace SimpleLife
     internal class ProjectionOfCF
     {
         //Policy;Product;PolicyType;Gen;Channel;Duration;Sex;IssueAge;PaymentMode;PremFreq;PolicyTerm;MaxPolicyTerm;PolicyCount;SumAssured
-
         public DataRow ModelPoint { get; set; }
+        public static GeneralStaticAssumptions generalStaticAssumptions = new GeneralStaticAssumptions(Input.PathAssumptions,
+            Input.SchemasAssumptions,
+            Input.PathParamAssumptions,
+            Input.SchemasParamAssumptions);
+        public static LifeTable mortalityTable = new LifeTable(Input.PathMortRate, Input.SchemasMortRate, 0.0m);
 
-        public ProjectionOfCF(DataRow row)
+        public ProjectionOfCF(DataRow modelPointRow)
         {
-            ModelPoint = row;
+            ModelPoint = modelPointRow;
         }
 
         /// <summary>
@@ -567,7 +571,7 @@ namespace SimpleLife
         public decimal SizeExpsCommInit(int t)
         {
             if (t == 0)
-            { return SizePremium(t) * GeneralStaticAssumptions.CommInitPrem * (1 + GeneralStaticAssumptions.CnsmpTax); }
+            { return SizePremium(t) * generalStaticAssumptions.CommInitPrem() * (1 + generalStaticAssumptions.CnsmpTax(); }
             else { return 0; }
         }
         /// <summary>
@@ -579,8 +583,8 @@ namespace SimpleLife
         {
             if (t == 0)
             { return 0; }
-            else if (t < GeneralStaticAssumptions.CommRenTerm)
-            { return SizePremium(t) * GeneralStaticAssumptions.CommRenPrem * (1 + GeneralStaticAssumptions.CnsmpTax); }
+            else if (t < generalStaticAssumptions.CommRenTerm()
+            { return SizePremium(t) * generalStaticAssumptions.CommRenPrem() * (1 + generalStaticAssumptions.CnsmpTax(); }
             else { return 0; }
         }
         /// <summary>
@@ -591,10 +595,10 @@ namespace SimpleLife
         public decimal SizeExpsMaint(int t)
         {
             return (SizeAnnPrem(t) 
-                * GeneralStaticAssumptions.ExpsMaintAnnPrem 
+                * generalStaticAssumptions.ExpsMaintAnnPrem() 
                 + (SizeSumAssured(t) 
-                * GeneralStaticAssumptions.ExpsMaintSA 
-                + GeneralStaticAssumptions.ExpsMaintPol) 
+                * generalStaticAssumptions.ExpsMaintSA() 
+                + generalStaticAssumptions.ExpsMaintPol()) 
                 * InflFactor(t));
         }
         /// <summary>
@@ -679,9 +683,7 @@ namespace SimpleLife
         /// <returns></returns>
         public decimal last_t()
         {
-            return Math.Min(GeneralStaticAssumptions.LastAge - ModelPoint["IssueAge"], ModelPoint["PolicyTerm"]);
+            return Math.Min(generalStaticAssumptions.LastAge() - ModelPoint["IssueAge"], ModelPoint["PolicyTerm"]);
         }
-
-
     }
 }

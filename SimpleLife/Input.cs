@@ -11,6 +11,9 @@ namespace SimpleLife
         public static string PathAssumptions = @"C:\Users\work\source\repos\ActuarialModellingInCSharp\SimpleLife\Data\disc_rate_ann.csv";
         public static string SchemasAssumptions = @"{""year"":""int"",""zero_spot"":""decimal""}";
 
+        public static string PathParamAssumptions = @"C:\Users\work\source\repos\ActuarialModellingInCSharp\SimpleLife\Data\disc_rate_ann.csv";
+        public static string SchemasParamAssumptions = @"{""year"":""int"",""zero_spot"":""decimal""}";
+
         public static string SchemasMortRate = @"{""MortTableID"":""int"",""Age"":""int"",""Sex"":""string"",""Qx"":""decimal""}";
         public static string PathMortRate = @"C:\Users\work\source\repos\ActuarialModellingInCSharp\SimpleLife\Data\mortality_table.csv";
 
