@@ -15,7 +15,6 @@ namespace SimpleLife
             Input.SchemasAssumptions,
             Input.PathParamAssumptions,
             Input.SchemasParamAssumptions);
-        public static LifeTable mortalityTable = new LifeTable(Input.PathMortRate, Input.SchemasMortRate, 0.0m);
 
         public ProjectionOfCF(DataRow modelPointRow)
         {

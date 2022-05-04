@@ -24,10 +24,10 @@ namespace SimpleLife
         /// <param name="productType"></param>
         /// <param name="generation"></param>
         /// <returns></returns>
-        public dynamic AssumtionParameterTableQuery(string assumption, string product, string productType, int generation)
+        public dynamic AssumtionParameterTableQuery(string assumption, string product, int policyType, int generation)
         {
             var r = from i in AssumtionParameterTable.AsEnumerable()
-                    where i.Field<string>("Product")==product && i.Field<string>("PolType")==productType && i.Field<int>("Gen")==generation
+                    where i.Field<string>("Product")==product && i.Field<int>("PolType")== policyType && i.Field<int>("Gen")==generation
                     select i.Field<dynamic>(assumption);
             return r.FirstOrDefault();
         }
@@ -38,9 +38,9 @@ namespace SimpleLife
         /// <param name="productType"></param>
         /// <param name="generation"></param>
         /// <returns></returns>
-        public int MortalityTableID(string product, string productType, int generation)
+        public int MortalityTableID(string product, int policyType, int generation)
         {
-            return (int)AssumtionParameterTableQuery("BaseMort", product, productType, generation);
+            return (int)AssumtionParameterTableQuery("BaseMort", product, policyType, generation);
         }
         /// <summary>
         /// Consumption tax rate
@@ -49,9 +49,9 @@ namespace SimpleLife
         /// <param name="productType"></param>
         /// <param name="generation"></param>
         /// <returns></returns>
-        public decimal CnsmpTax(string product, string productType, int generation)
+        public decimal CnsmpTax(string product, int policyType, int generation)
         {
-            return (decimal)AssumtionParameterTableQuery("CnsmpTax", product, productType, generation);
+            return (decimal)AssumtionParameterTableQuery("CnsmpTax", product, policyType, generation);
         }
         /// <summary>
         /// Initial commission per premium
@@ -60,9 +60,9 @@ namespace SimpleLife
         /// <param name="productType"></param>
         /// <param name="generation"></param>
         /// <returns></returns>
-        public decimal CommInitPrem(string product, string productType, int generation)
+        public decimal CommInitPrem(string product, int policyType, int generation)
         {
-            return (decimal)AssumtionParameterTableQuery("CommInitPrem", product, productType, generation);
+            return (decimal)AssumtionParameterTableQuery("CommInitPrem", product, policyType, generation);
         }
         /// <summary>
         /// Renewal commission per premium
@@ -71,9 +71,9 @@ namespace SimpleLife
         /// <param name="productType"></param>
         /// <param name="generation"></param>
         /// <returns></returns>
-        public decimal CommRenPrem(string product, string productType, int generation)
+        public decimal CommRenPrem(string product, int policyType, int generation)
         {
-            return (decimal)AssumtionParameterTableQuery("CommRenPrem", product, productType, generation);
+            return (decimal)AssumtionParameterTableQuery("CommRenPrem", product, policyType, generation);
         }
         /// <summary>
         /// Renewal commission term
@@ -82,9 +82,9 @@ namespace SimpleLife
         /// <param name="productType"></param>
         /// <param name="generation"></param>
         /// <returns></returns>
-        public decimal CommRenTerm(string product, string productType, int generation)
+        public decimal CommRenTerm(string product, int policyType, int generation)
         {
-            return (decimal)AssumtionParameterTableQuery("CommRenTerm", product, productType, generation);
+            return (decimal)AssumtionParameterTableQuery("CommRenTerm", product, policyType, generation);
         }
         /// <summary>
         /// Acquisition expense per annualized premium
@@ -93,9 +93,9 @@ namespace SimpleLife
         /// <param name="productType"></param>
         /// <param name="generation"></param>
         /// <returns></returns>
-        public decimal ExpsAcqAnnPrem(string product, string productType, int generation)
+        public decimal ExpsAcqAnnPrem(string product, int policyType, int generation)
         {
-            return (decimal)AssumtionParameterTableQuery("ExpsAcqAnnPrem", product, productType, generation);
+            return (decimal)AssumtionParameterTableQuery("ExpsAcqAnnPrem", product, policyType, generation);
         }
         /// <summary>
         /// Acquisition expense per policy
@@ -104,9 +104,9 @@ namespace SimpleLife
         /// <param name="productType"></param>
         /// <param name="generation"></param>
         /// <returns></returns>
-        public decimal ExpsAcqPol(string product, string productType, int generation)
+        public decimal ExpsAcqPol(string product, int policyType, int generation)
         {
-            return (decimal)AssumtionParameterTableQuery("ExpsAcqPol", product, productType, generation);
+            return (decimal)AssumtionParameterTableQuery("ExpsAcqPol", product, policyType, generation);
         }
         /// <summary>
         /// Acquisition expense per sum assured
@@ -115,9 +115,9 @@ namespace SimpleLife
         /// <param name="productType"></param>
         /// <param name="generation"></param>
         /// <returns></returns>
-        public decimal ExpsAcqSA(string product, string productType, int generation)
+        public decimal ExpsAcqSA(string product, int policyType, int generation)
         {
-            return (decimal)AssumtionParameterTableQuery("ExpsAcqSA", product, productType, generation);
+            return (decimal)AssumtionParameterTableQuery("ExpsAcqSA", product, policyType, generation);
         }
         /// <summary>
         /// Maintenance expense per annualized premium
@@ -126,9 +126,9 @@ namespace SimpleLife
         /// <param name="productType"></param>
         /// <param name="generation"></param>
         /// <returns></returns>
-        public decimal ExpsMaintAnnPrem(string product, string productType, int generation)
+        public decimal ExpsMaintAnnPrem(string product, int policyType, int generation)
         {
-            return (decimal)AssumtionParameterTableQuery("ExpsMaintAnnPrem", product, productType, generation);
+            return (decimal)AssumtionParameterTableQuery("ExpsMaintAnnPrem", product, policyType, generation);
         }
         /// <summary>
         /// Maintenance expense per policy
@@ -137,9 +137,9 @@ namespace SimpleLife
         /// <param name="productType"></param>
         /// <param name="generation"></param>
         /// <returns></returns>
-        public decimal ExpsMaintPol(string product, string productType, int generation)
+        public decimal ExpsMaintPol(string product, int policyType, int generation)
         {
-            return (decimal)AssumtionParameterTableQuery("ExpsMaintPol", product, productType, generation);
+            return (decimal)AssumtionParameterTableQuery("ExpsMaintPol", product, policyType, generation);
         }
         /// <summary>
         /// Maintenance expense per sum assured
@@ -148,9 +148,9 @@ namespace SimpleLife
         /// <param name="productType"></param>
         /// <param name="generation"></param>
         /// <returns></returns>
-        public decimal ExpsMaintSA(string product, string productType, int generation)
+        public decimal ExpsMaintSA(string product, int policyType, int generation)
         {
-            return (decimal)AssumtionParameterTableQuery("ExpsMaintSA", product, productType, generation);
+            return (decimal)AssumtionParameterTableQuery("ExpsMaintSA", product, policyType, generation);
         }
         /// <summary>
         /// Inflation rate
@@ -159,9 +159,9 @@ namespace SimpleLife
         /// <param name="productType"></param>
         /// <param name="generation"></param>
         /// <returns></returns>
-        public decimal InflRate(string product, string productType, int generation)
+        public decimal InflRate(string product, int policyType, int generation)
         {
-            return (decimal)AssumtionParameterTableQuery("InflRate", product, productType, generation);
+            return (decimal)AssumtionParameterTableQuery("InflRate", product, policyType, generation);
         }
         /// <summary>
         /// Age at which mortality becomes 1
@@ -170,9 +170,9 @@ namespace SimpleLife
         /// <param name="productType"></param>
         /// <param name="generation"></param>
         /// <returns></returns>
-        public decimal LastAge(string product, string productType, int generation)
+        public decimal LastAge(string product, int policyType, int generation)
         {
-            return (decimal)AssumtionParameterTableQuery("LastAge", product, productType, generation);
+            return (decimal)AssumtionParameterTableQuery("LastAge", product, policyType, generation);
         }
         /// <summary>
         /// Mortality factor : 
@@ -181,9 +181,9 @@ namespace SimpleLife
         /// <param name="productType"></param>
         /// <param name="generation"></param>
         /// <returns></returns>
-        public decimal MortFactor(string product, string productType, int generation, int year)
+        public decimal MortFactor(string product, int policyType, int generation, int year)
         {
-            string column = (string)AssumtionParameterTableQuery("MortFactor", product, productType, generation);
+            string column = (string)AssumtionParameterTableQuery("MortFactor", product, policyType, generation);
             var r = from i in AssumtionTable.AsEnumerable()
                     where i.Field<int>("Year")== year
                     select i.Field<decimal>(column);
@@ -196,9 +196,9 @@ namespace SimpleLife
         /// <param name="productType"></param>
         /// <param name="generation"></param>
         /// <returns></returns>
-        public decimal MortTable(string product, string productType, int generation)
+        public decimal MortTable(string product, int policyType, int generation)
         {
-            return (decimal)AssumtionParameterTableQuery("MortTable", product, productType, generation);
+            return (decimal)AssumtionParameterTableQuery("MortTable", product, policyType, generation);
         }
         /// <summary>
         /// Surrender Rate
@@ -207,18 +207,18 @@ namespace SimpleLife
         /// <param name="productType"></param>
         /// <param name="generation"></param>
         /// <returns></returns>
-        public decimal SurrRate(string product, string productType, int generation, int year)
+        public decimal SurrRate(string product, int policyType, int generation, int year)
         {
-            string column = (string)AssumtionParameterTableQuery("Surrender", product, productType, generation);
+            string column = (string)AssumtionParameterTableQuery("Surrender", product, policyType, generation);
             var r = from i in AssumtionTable.AsEnumerable()
                     where i.Field<int>("Year") == year
                     select i.Field<decimal>(column);
             return (decimal)column.FirstOrDefault();
         }
 
-        public int BaseMort(string product, string productType, int generation)
+        public int BaseMort(string product, int policyType, int generation)
         {
-            return (int)AssumtionParameterTableQuery("BaseMort", product, productType, generation);
+            return (int)AssumtionParameterTableQuery("BaseMort", product, policyType, generation);
         }
     }
 }

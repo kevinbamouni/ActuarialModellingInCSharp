@@ -87,8 +87,8 @@ namespace SimpleLife
                                                     ""PremFreq"":""int"",
                                                     ""PolicyTerm"":""int"",
                                                     ""MaxPolicyTerm"":""int"",
-                                                    ""PolicyCount"":""int"",
-                                                    ""SumAssured"":""int""}";
+                                                    ""PolicyCount"":""decimal"",
+                                                    ""SumAssured"":""decimal""}";
         /// //////////////////////////////////////////////////////////ok
         public static string PathModelPointTest = @"C:\Users\work\source\repos\ActuarialModellingInCSharp\SimpleLife\Data\policydata_test.csv";
 
