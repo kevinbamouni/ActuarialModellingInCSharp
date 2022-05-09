@@ -8,7 +8,7 @@ using System.Data;
 
 namespace SimpleLife
 {
-    public class Economic
+    internal class Economic
     {
         /// <summary>
         /// Hold the economic scenarios of the projections
@@ -19,7 +19,12 @@ namespace SimpleLife
         {
             EconomicScenarios = DataFromCsv.ReadDataTableFromCsv(path, schema);
         }
-
+        /// <summary>
+        /// Discount rate as the IntRate from economic scenarios
+        /// </summary>
+        /// <param name="ScenID"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
         public decimal DiscRate(int ScenID, int t)
         {
             var a = from rw in EconomicScenarios.AsEnumerable()
@@ -27,23 +32,25 @@ namespace SimpleLife
                     select rw.Field<decimal>("IntRate");
             return a.FirstOrDefault<decimal>();
         }
-
-        public decimal InflFactor(int t)
-        {
-            if (t == 0)
-            {
-                return 1;
-            }
-            else
-            {
-                //return InflFactor(t - 1) / (1 + AsmpLookup("InflRate"));
-                return InflFactor(t - 1) / (1 + 0);
-            }
-        }
-
+        /// <summary>
+        /// Investment return rate equal to the Discount rate function
+        /// </summary>
+        /// <param name="ScenID"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
         public decimal InvstRetRate(int ScenID, int t)
         {
             return DiscRate(ScenID, t);
+        }
+        /// <summary>
+        /// Count the number of economic scenarios
+        /// </summary>
+        /// <returns></returns>
+        public int NumberOfEconomicScenarios()
+        {
+            var nb = from i in EconomicScenarios.AsEnumerable()
+                     select i.Field<int>("ScenID");
+            return nb.Distinct<int>().Count<int>();
         }
     }
 }

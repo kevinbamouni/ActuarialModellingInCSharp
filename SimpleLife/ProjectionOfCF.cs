@@ -10,13 +10,9 @@ namespace SimpleLife
     internal class ProjectionOfCF
     {
         //Policy;Product;PolicyType;Gen;Channel;Duration;Sex;IssueAge;PaymentMode;PremFreq;PolicyTerm;MaxPolicyTerm;PolicyCount;SumAssured
-        public DataRow ModelPoint { get; set; }
-        public static GeneralStaticAssumptions generalStaticAssumptions = new GeneralStaticAssumptions(Input.PathAssumptions,
-            Input.SchemasAssumptions,
-            Input.PathParamAssumptions,
-            Input.SchemasParamAssumptions);
-
-        public ProjectionOfCF(DataRow modelPointRow)
+        public Policy ModelPoint { get; set; }
+        public static Economic EconomicScenarios = new Economic(Input.PathScenarios,Input.SchemasScenarios);
+        public ProjectionOfCF(Policy modelPointRow)
         {
             ModelPoint = modelPointRow;
         }
@@ -41,7 +37,7 @@ namespace SimpleLife
         /// <returns></returns>
         public decimal AttAge(int t)
         {
-            return (decimal)ModelPoint["IssueAge"] + t;
+            return (decimal)ModelPoint.IssueAge() + t;
         }
         /// <summary>
         /// Accidental death benefits
@@ -281,7 +277,7 @@ namespace SimpleLife
         {
             return (AccumCF(t)
             + PremIncome(t)
-            - ExpsTotal(t)) * DiscRate(t);
+            - ExpsTotal(t)) * EconomicScenarios.DiscRate(t);
         }
         /// <summary>
         /// Investment income
@@ -377,7 +373,7 @@ namespace SimpleLife
         /// <returns></returns>
         public decimal PolsMaturity(int t)
         {
-            if (t == (int)ModelPoint["PolicyTerm"])
+            if (t == ModelPoint.PolicyTerm())
             { return PolsIF_End(t); }
             else
             { return 0; }
@@ -387,11 +383,11 @@ namespace SimpleLife
         /// </summary>
         /// <param name="t"></param>
         /// <returns></returns>
-        public int PolsNewBiz(int t)
+        public decimal PolsNewBiz(int t)
         { 
             if (t == 0) 
             { 
-                return (int)ModelPoint["PolicyCount"]; 
+                return ModelPoint.PolicyCount(); 
             } else { return 0; } 
         }
         /// <summary>
@@ -482,7 +478,7 @@ namespace SimpleLife
         /// <param name="t"></param>
         /// <returns></returns>
         public decimal SizeAnnPrem(int t) {
-            return SizeSumAssured(t) * pol.AnnPremRate;
+            return SizeSumAssured(t) * ModelPoint.AnnPremRate();
         }
         /// <summary>
         /// Accidental death benefit per policy
@@ -544,8 +540,8 @@ namespace SimpleLife
         /// <param name="t"></param>
         /// <returns></returns>
         public decimal SizeBenefitSurr(int t) {
-            return SizeSumAssured(t) * (pol.CashValueRate(t)
-                    + pol.CashValueRate(t + 1)) / 2;
+            return SizeSumAssured(t) * (ModelPoint.CashValueRate(t)
+                    + ModelPoint.CashValueRate(t + 1)) / 2;
         }
         /// <summary>
         /// Acquisition expense per policy at time t
@@ -556,9 +552,9 @@ namespace SimpleLife
         {
             if (t == 0)
             {
-                return (SizeAnnPrem(t) * GeneralStaticAssumptions.ExpsAcqAnnPrem
-                  + (SizeSumAssured(t) * GeneralStaticAssumptions.ExpsAcqSA + GeneralStaticAssumptions.ExpsAcqPol)
-                  * InflFactor(t) / InflFactor(0));
+                return (SizeAnnPrem(t) * Policy.generalStaticAssumptions.ExpsAcqAnnPrem(
+                  + (SizeSumAssured(t) * Policy.generalStaticAssumptions.ExpsAcqSA() + Policy.generalStaticAssumptions.ExpsAcqPol())
+                  * Policy.generalStaticAssumptions.InflFactor(t) / Policy.generalStaticAssumptions.InflFactor(0));
             }
             else { return 0; }
         }
@@ -570,7 +566,7 @@ namespace SimpleLife
         public decimal SizeExpsCommInit(int t)
         {
             if (t == 0)
-            { return SizePremium(t) * generalStaticAssumptions.CommInitPrem() * (1 + generalStaticAssumptions.CnsmpTax(); }
+            { return SizePremium(t) * Policy.generalStaticAssumptions.CommInitPrem() * (1 + Policy.generalStaticAssumptions.CnsmpTax(); }
             else { return 0; }
         }
         /// <summary>
@@ -582,8 +578,8 @@ namespace SimpleLife
         {
             if (t == 0)
             { return 0; }
-            else if (t < generalStaticAssumptions.CommRenTerm()
-            { return SizePremium(t) * generalStaticAssumptions.CommRenPrem() * (1 + generalStaticAssumptions.CnsmpTax(); }
+            else if (t < Policy.generalStaticAssumptions.CommRenTerm()
+            { return SizePremium(t) * Policy.generalStaticAssumptions.CommRenPrem() * (1 + Policy.generalStaticAssumptions.CnsmpTax(); }
             else { return 0; }
         }
         /// <summary>
@@ -594,11 +590,11 @@ namespace SimpleLife
         public decimal SizeExpsMaint(int t)
         {
             return (SizeAnnPrem(t) 
-                * generalStaticAssumptions.ExpsMaintAnnPrem() 
+                * Policy.generalStaticAssumptions.ExpsMaintAnnPrem() 
                 + (SizeSumAssured(t) 
-                * generalStaticAssumptions.ExpsMaintSA() 
-                + generalStaticAssumptions.ExpsMaintPol()) 
-                * InflFactor(t));
+                * Policy.generalStaticAssumptions.ExpsMaintSA() 
+                + Policy.generalStaticAssumptions.ExpsMaintPol()) 
+                * Policy.generalStaticAssumptions.InflFactor(t));
         }
         /// <summary>
         /// Other expenses per policy at time t
@@ -613,7 +609,7 @@ namespace SimpleLife
         /// <returns></returns>
         public decimal SizeInvstIncome(int t)
         {
-            return (SizeReserveTotalAftMat(t) + SizePremium(t)) * InvstRetRate(t);
+            return (SizeReserveTotalAftMat(t) + SizePremium(t)) * EconomicScenarios.InvstRetRate(t);
         }
         /// <summary>
         /// Premium income per policy from t to t+1
@@ -621,7 +617,7 @@ namespace SimpleLife
         /// <param name="t"></param>
         /// <returns></returns>
         public decimal SizePremium(int t)
-        { return SizeSumAssured(t) * ModelPoint["GrossPremRate"] * ModelPoint["PremFreq"]; }
+        { return SizeSumAssured(t) * ModelPoint.GrossPremRate() * ModelPoint.PremFreq(); }
         /// <summary>
         /// Premium reserve per policy: After maturity
         /// </summary>
@@ -629,7 +625,7 @@ namespace SimpleLife
         /// <returns></returns>
         public decimal SizeReservePremRsrvAftMat(int t)
         {
-            return SizeSumAssured(t) * pol.ReserveNLP_Rate('VAL', t);
+            return SizeSumAssured(t) * ModelPoint.ReserveNLP_Rate("VAL", t);
         }
         /// <summary>
         /// Premium reserve per policy: End of period
@@ -638,7 +634,7 @@ namespace SimpleLife
         /// <returns></returns>
         public decimal SizeReservePremRsrvEnd(int t)
         { 
-            return SizeSumAssured(t) * pol.ReserveNLP_Rate('VAL', t); 
+            return SizeSumAssured(t) * ModelPoint.ReserveNLP_Rate("VAL", t); 
         }
         /// <summary>
         /// Total reserve per policy: After maturity
@@ -674,7 +670,7 @@ namespace SimpleLife
         /// <returns></returns>
         public decimal SizeSumAssured(int t)
         {
-            return (decimal)ModelPoint["SumAssured"];
+            return (decimal)ModelPoint.SumAssured();
         }
         /// <summary>
         /// 
@@ -682,7 +678,9 @@ namespace SimpleLife
         /// <returns></returns>
         public decimal last_t()
         {
-            return Math.Min(generalStaticAssumptions.LastAge() - ModelPoint["IssueAge"], ModelPoint["PolicyTerm"]);
+            int tid = Policy.generalStaticAssumptions.BaseMort(ModelPoint.Product(), ModelPoint.PolicyType(), ModelPoint.Gen());
+            int lastage = Policy.mortalityTable.LastAge(ModelPoint.Sex(), tid);
+            return Math.Min(lastage - ModelPoint.IssueAge(), ModelPoint.PolicyTerm());
         }
     }
 }

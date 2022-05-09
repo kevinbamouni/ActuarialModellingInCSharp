@@ -24,24 +24,24 @@ namespace SimpleLife
         /// <param name="productType"></param>
         /// <param name="generation"></param>
         /// <returns></returns>
-        public dynamic AssumtionParameterTableQuery(string assumption, string product, int policyType, int generation)
+        public dynamic? AssumtionParameterTableQuery(string assumption, string product, int policyType, int generation)
         {
             var r = from i in AssumtionParameterTable.AsEnumerable()
                     where i.Field<string>("Product")==product && i.Field<int>("PolType")== policyType && i.Field<int>("Gen")==generation
                     select i.Field<dynamic>(assumption);
             return r.FirstOrDefault();
         }
-        /// <summary>
-        /// Get the ID of the mortality table to use
-        /// </summary>
-        /// <param name="product"></param>
-        /// <param name="productType"></param>
-        /// <param name="generation"></param>
-        /// <returns></returns>
-        public int MortalityTableID(string product, int policyType, int generation)
-        {
-            return (int)AssumtionParameterTableQuery("BaseMort", product, policyType, generation);
-        }
+        ///// <summary>
+        ///// Get the ID of the mortality table to use
+        ///// </summary>
+        ///// <param name="product"></param>
+        ///// <param name="productType"></param>
+        ///// <param name="generation"></param>
+        ///// <returns></returns>
+        //public int MortalityTableID(string product, int policyType, int generation)
+        //{
+        //    return (int)AssumtionParameterTableQuery("BaseMort", product, policyType, generation);
+        //}
         /// <summary>
         /// Consumption tax rate
         /// </summary>
@@ -163,17 +163,17 @@ namespace SimpleLife
         {
             return (decimal)AssumtionParameterTableQuery("InflRate", product, policyType, generation);
         }
-        /// <summary>
-        /// Age at which mortality becomes 1
-        /// </summary>
-        /// <param name="product"></param>
-        /// <param name="productType"></param>
-        /// <param name="generation"></param>
-        /// <returns></returns>
-        public decimal LastAge(string product, int policyType, int generation)
-        {
-            return (decimal)AssumtionParameterTableQuery("LastAge", product, policyType, generation);
-        }
+        ///// <summary>
+        ///// Age at which mortality becomes 1
+        ///// </summary>
+        ///// <param name="product"></param>
+        ///// <param name="productType"></param>
+        ///// <param name="generation"></param>
+        ///// <returns></returns>
+        //public decimal LastAge(string product, int policyType, int generation)
+        //{
+        //    return (decimal)AssumtionParameterTableQuery("LastAge", product, policyType, generation);
+        //}
         /// <summary>
         /// Mortality factor : 
         /// </summary>
@@ -189,36 +189,67 @@ namespace SimpleLife
                     select i.Field<decimal>(column);
             return (decimal)column.FirstOrDefault();
         }
-        /// <summary>
-        /// Mortality Table
-        /// </summary>
-        /// <param name="product"></param>
-        /// <param name="productType"></param>
-        /// <param name="generation"></param>
-        /// <returns></returns>
-        public decimal MortTable(string product, int policyType, int generation)
-        {
-            return (decimal)AssumtionParameterTableQuery("MortTable", product, policyType, generation);
-        }
+        ///// <summary>
+        ///// Mortality Table
+        ///// </summary>
+        ///// <param name="product"></param>
+        ///// <param name="productType"></param>
+        ///// <param name="generation"></param>
+        ///// <returns></returns>
+        //public decimal MortTable(string product, int policyType, int generation)
+        //{
+        //    return (decimal)AssumtionParameterTableQuery("BaseMort", product, policyType, generation);
+        //}
         /// <summary>
         /// Surrender Rate
         /// </summary>
         /// <param name="product"></param>
         /// <param name="productType"></param>
         /// <param name="generation"></param>
-        /// <returns></returns>
+        /// <returns>return the name of the surrender table to use</returns>
         public decimal SurrRate(string product, int policyType, int generation, int year)
         {
-            string column = (string)AssumtionParameterTableQuery("Surrender", product, policyType, generation);
-            var r = from i in AssumtionTable.AsEnumerable()
-                    where i.Field<int>("Year") == year
-                    select i.Field<decimal>(column);
-            return (decimal)column.FirstOrDefault();
+            
+            string? column = AssumtionParameterTableQuery("Surrender", product, policyType, generation);
+            if (column is not null)
+            {
+                var r = from i in AssumtionTable.AsEnumerable()
+                        where i.Field<int>("Year") == year
+                        select i.Field<decimal>(column);
+                return (decimal)r.FirstOrDefault();
+            }
+            else { throw new Exception("Missing Value in Table AssumtionParameterTable : Column Surrender!")}
         }
-
+        /// <summary>
+        /// Get the Mortality table ID to use for a policy
+        /// </summary>
+        /// <param name="product"></param>
+        /// <param name="policyType"></param>
+        /// <param name="generation"></param>
+        /// <returns>return the Mortality table id to use.</returns>
         public int BaseMort(string product, int policyType, int generation)
         {
             return (int)AssumtionParameterTableQuery("BaseMort", product, policyType, generation);
+        }
+        /// <summary>
+        /// Get the inflation factor
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="product"></param>
+        /// <param name="policyType"></param>
+        /// <param name="generation"></param>
+        /// <returns></returns>
+        public decimal InflFactor(int t, string product, int policyType, int generation)
+        {
+            if (t == 0)
+            {
+                return 1;
+            }
+            else
+            {
+                return InflFactor(t - 1, product, policyType, generation) / (1 + InflRate(product, policyType, generation));
+                //return InflFactor(t - 1) / (1 + 0);
+            }
         }
     }
 }

@@ -259,5 +259,18 @@ namespace SimpleLife
                     select mt.Field<decimal>("Qx");
             return (decimal)r.FirstOrDefault<decimal>();
         }
+        /// <summary>
+        /// Age at which mortality becomes 1
+        /// </summary>
+        /// <param name="sex"></param>
+        /// <param name="tableID"></param>
+        /// <returns></returns>
+        public int LastAge(string sex, int tableID)
+        {
+            var la = from mt in MortalityTable.AsEnumerable()
+                     where mt.Field<int>("MorttableID") == tableID && mt.Field<string>("Sex") == sex && mt.Field<int>("Qx") >=1
+                     select mt.Field<int>("Age");
+            return la.Min<int>();
+        }
     }
 }
