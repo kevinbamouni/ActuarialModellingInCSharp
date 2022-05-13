@@ -15,7 +15,6 @@ namespace BasicTermS
         static void Main(string[] args)
         {
             DataTable modelpointest = DataFromCsv.ReadDataTableFromCsv(Tables.PathModelPoint, Tables.SchemasModelPoint);
-            
             ////////////////////////////////////////////////////////////////////////////////////////
             //ConcurrentDictionary<int, Dictionary<string, List<double>>> concurrentresult = new ConcurrentDictionary<int, Dictionary<string, List<double>>>();
             //int dickey = 0;
@@ -38,7 +37,6 @@ namespace BasicTermS
                 results_run = proj.result_pv();
                 //break;
             }
-
             //////////////////////////////////////////////////////////////////////////////////////// Mango DB test and save
             //MongoClient dbClient = new MongoClient("mongodb://127.0.0.1:27017/?readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false");
 

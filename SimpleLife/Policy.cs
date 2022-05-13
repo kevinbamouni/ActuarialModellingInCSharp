@@ -29,7 +29,7 @@ namespace SimpleLife
         /// Model point Product
         /// </summary>
         /// <returns></returns>
-        public string Product()
+        public string? Product()
         {
             return PolicyRow.Field<string>("Product");
         }
@@ -293,6 +293,16 @@ namespace SimpleLife
         public decimal UernPremRate()
         {
             return 0.0m;
+        }
+        /// <summary>
+        /// BaseMortRate Qx of the policy at Age age
+        /// </summary>
+        /// <returns></returns>
+        public decimal BaseMortRate(int age)
+        {
+            return mortalityTable.qx(age,
+                Sex(),
+                generalStaticAssumptions.BaseMort(Product(),PolicyType(),Gen()));
         }
     }
 }

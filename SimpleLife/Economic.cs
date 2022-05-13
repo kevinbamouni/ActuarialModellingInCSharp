@@ -14,7 +14,6 @@ namespace SimpleLife
         /// Hold the economic scenarios of the projections
         /// </summary>
         public DataTable EconomicScenarios;
-
         public Economic(string path, string schema)
         {
             EconomicScenarios = DataFromCsv.ReadDataTableFromCsv(path, schema);

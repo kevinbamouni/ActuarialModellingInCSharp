@@ -15,7 +15,6 @@ namespace SimpleLife
             AssumtionParameterTable = DataFromCsv.ReadDataTableFromCsv(paramAssumpPath, paramAssumpSchema);
             AssumtionTable = DataFromCsv.ReadDataTableFromCsv(assumpPath, assumpSchema);
         }
-
         /// <summary>
         /// Permet de lancer une requete sur la table Assumption
         /// </summary>
@@ -203,9 +202,10 @@ namespace SimpleLife
         /// <summary>
         /// Surrender Rate
         /// </summary>
-        /// <param name="product"></param>
-        /// <param name="productType"></param>
-        /// <param name="generation"></param>
+        /// <param name="product">product</param>
+        /// <param name="productType">product type</param>
+        /// <param name="generation">generation</param>
+        /// /// <param name="year">past duration</param>
         /// <returns>return the name of the surrender table to use</returns>
         public decimal SurrRate(string product, int policyType, int generation, int year)
         {
@@ -218,7 +218,8 @@ namespace SimpleLife
                         select i.Field<decimal>(column);
                 return (decimal)r.FirstOrDefault();
             }
-            else { throw new Exception("Missing Value in Table AssumtionParameterTable : Column Surrender!")}
+            else
+            { throw new Exception("Missing Value in Table AssumtionParameterTable : Column Surrender!"); }
         }
         /// <summary>
         /// Get the Mortality table ID to use for a policy
