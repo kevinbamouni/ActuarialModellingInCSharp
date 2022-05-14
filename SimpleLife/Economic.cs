@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data;
-
+﻿using System.Data;
 
 namespace SimpleLife
 {
     internal class Economic
     {
         /// <summary>
-        /// Hold the economic scenarios of the projections
+        /// DataTable : Hold the economic scenarios of the projections
         /// </summary>
         public DataTable EconomicScenarios;
+        /// <summary>
+        /// public constructor
+        /// </summary>
+        /// <param name="path">path to data file</param>
+        /// <param name="schema">schema of data file</param>
         public Economic(string path, string schema)
         {
             EconomicScenarios = DataFromCsv.ReadDataTableFromCsv(path, schema);
@@ -21,9 +20,9 @@ namespace SimpleLife
         /// <summary>
         /// Discount rate as the IntRate from economic scenarios
         /// </summary>
-        /// <param name="ScenID"></param>
-        /// <param name="t"></param>
-        /// <returns></returns>
+        /// <param name="ScenID">ID of the scenario</param>
+        /// <param name="t">time t of the scenario</param>
+        /// <returns>The discount rate from the economic scenario</returns>
         public decimal DiscRate(int ScenID, int t)
         {
             var a = from rw in EconomicScenarios.AsEnumerable()
@@ -32,11 +31,11 @@ namespace SimpleLife
             return a.FirstOrDefault<decimal>();
         }
         /// <summary>
-        /// Investment return rate equal to the Discount rate function
+        /// Investment return rate wich also equal to the Discount rate function
         /// </summary>
         /// <param name="ScenID"></param>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>the investment return rate</returns>
         public decimal InvstRetRate(int ScenID, int t)
         {
             return DiscRate(ScenID, t);
@@ -44,7 +43,7 @@ namespace SimpleLife
         /// <summary>
         /// Count the number of economic scenarios
         /// </summary>
-        /// <returns></returns>
+        /// <returns>the number of economic scenarios in the datafile</returns>
         public int NumberOfEconomicScenarios()
         {
             var nb = from i in EconomicScenarios.AsEnumerable()

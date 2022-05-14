@@ -1,7 +1,6 @@
 ﻿//using System;
 using System.Data;
 using System.Collections.Concurrent;
-using Excel = Microsoft.Office.Interop.Excel;
 //using System.IO;
 //using System.Text;
 using System.Text.Json;

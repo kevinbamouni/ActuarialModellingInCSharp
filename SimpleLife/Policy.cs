@@ -1,17 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data;
+﻿using System.Data;
 
 namespace SimpleLife
 {
     internal class Policy
     {
+        /// <summary>
+        /// Policy Data
+        /// </summary>
         public DataRow PolicyRow { get; set; }
+        /// <summary>
+        /// Mortality Data Table
+        /// </summary>
         public static LifeTable mortalityTable = new LifeTable(Input.PathMortRate, Input.SchemasMortRate, 0.0m);
-        public static ProductSpecifications ProductSpecfication = new ProductSpecifications(Input.PathProductSpec,Input.SchemasProductSpec);
+        /// <summary>
+        /// Product specification Data Object
+        /// </summary>
+        public static ProductSpecifications ProductSpecfication = new ProductSpecifications(Input.PathProductSpec, Input.SchemasProductSpec);
+        /// <summary>
+        /// General Static Assumption Data Object
+        /// </summary>
         public static GeneralStaticAssumptions generalStaticAssumptions = new GeneralStaticAssumptions(Input.PathAssumptions,
             Input.SchemasAssumptions,
             Input.PathParamAssumptions,
@@ -24,7 +31,6 @@ namespace SimpleLife
         {
             PolicyRow = modelPointRow;
         }
-        
         /// <summary>
         /// Model point Product
         /// </summary>
@@ -125,7 +131,7 @@ namespace SimpleLife
             {
                 return 0.0m;
             }
-            else if (sm <=30_000_000m && sm > 10_000_000m)
+            else if (sm <= 30_000_000m && sm > 10_000_000m)
             {
                 return 0.05m;
             }
@@ -162,7 +168,7 @@ namespace SimpleLife
         /// <returns></returns>
         public decimal AnnPremRate()
         {
-            if (PremFreq()==0) { return GrossPremRate() * 1 / 10; }
+            if (PremFreq() == 0) { return GrossPremRate() * 1 / 10; }
             else { return GrossPremRate() * PremFreq(); }
         }
         /// <summary>
@@ -188,7 +194,7 @@ namespace SimpleLife
         /// <returns></returns>
         public decimal GrossPremRate()
         {
-            decimal alpha = ProductSpecfication.LoadAcqSA(Product(),PolicyType(),Gen(),PolicyTerm());
+            decimal alpha = ProductSpecfication.LoadAcqSA(Product(), PolicyType(), Gen(), PolicyTerm());
             decimal beta = ProductSpecfication.LoadMaintPrem(Product(), PolicyType(), Gen());
             decimal gamma = ProductSpecfication.LoadMaintSA(Product(), PolicyType(), Gen());
             decimal gamma2 = ProductSpecfication.LoadMaintSA2(Product(), PolicyType(), Gen());
@@ -200,26 +206,25 @@ namespace SimpleLife
             int tabid = ProductSpecfication.TableID("PREM", Product(), PolicyType(), Gen());
             if (Product() == "TERM" || Product() == "WL")
             {
-                return (mortalityTable.Axn(x, n, sex, tabid) 
-                    + alpha 
-                    + gamma 
+                return (mortalityTable.Axn(x, n, sex, tabid)
+                    + alpha
+                    + gamma
                     * mortalityTable.AnnDuenx(x, n, sex, tabid, PremFreq())
-                    + gamma2 
-                    * mortalityTable.AnnDuenx(x, n - m, sex, tabid,1, m)) / (1 - beta - delta) / PremFreq() / mortalityTable.AnnDuenx(x, m, sex, tabid,PremFreq());
+                    + gamma2
+                    * mortalityTable.AnnDuenx(x, n - m, sex, tabid, 1, m)) / (1 - beta - delta) / PremFreq() / mortalityTable.AnnDuenx(x, m, sex, tabid, PremFreq());
             }
             else if (Product() == "ENDW")
             {
-                return (mortalityTable.Exn(x, n,sex, tabid) + mortalityTable.Axn(x, n, sex, tabid) 
-                    + alpha 
-                    + gamma 
+                return (mortalityTable.Exn(x, n, sex, tabid) + mortalityTable.Axn(x, n, sex, tabid)
+                    + alpha
+                    + gamma
                     * mortalityTable.AnnDuenx(x, n, sex, tabid, PremFreq())
-                    + gamma2 
+                    + gamma2
                     * mortalityTable.AnnDuenx(x, n - m, sex, tabid, 1, m))
                     / (1 - beta - delta) / PremFreq() / mortalityTable.AnnDuenx(x, m, sex, tabid, PremFreq());
             }
             else throw new Exception("Policy.GrossPremRate() : Product() must be TERM || WL || ENDW ");
         }
-        
         /// <summary>
         /// Maintenance Loading per Gross Premium for Premium Waiver
         /// </summary>
@@ -233,7 +238,6 @@ namespace SimpleLife
             { return 0.001m; }
             else { return 0.002m; }
         }
-        
         /// <summary>
         /// Net Premium Rate
         /// </summary>
@@ -263,7 +267,7 @@ namespace SimpleLife
                     + gamma2 * mortalityTable.AnnDuenx(x + t, n - m, sex, tableid, 1, m - t)
                     - NetPremRate(basis) * mortalityTable.AnnDuenx(x + t, m - t, sex, tableid);
             }
-            else{ return mortalityTable.Axn(x + t, n - t, sex, tableid) + gamma2 * mortalityTable.AnnDuenx(x + t, m - t, sex, tableid); }
+            else { return mortalityTable.Axn(x + t, n - t, sex, tableid) + gamma2 * mortalityTable.AnnDuenx(x + t, m - t, sex, tableid); }
         }
         /// <summary>
         /// Valuation Reserve Rate per Sum Assured
@@ -281,8 +285,8 @@ namespace SimpleLife
         public decimal SurrCharge(int t)
         {
             int m = PolicyTerm();
-            return ProductSpecfication.InitSurrCharge(Product(), PolicyType(), Gen(), PolicyTerm()) 
-                * System.Math.Max((System.Math.Min(m, 10) - t) 
+            return ProductSpecfication.InitSurrCharge(Product(), PolicyType(), Gen(), PolicyTerm())
+                * System.Math.Max((System.Math.Min(m, 10) - t)
                 / System.Math.Min(m, 10), 0);
 
         }
@@ -302,7 +306,7 @@ namespace SimpleLife
         {
             return mortalityTable.qx(age,
                 Sex(),
-                generalStaticAssumptions.BaseMort(Product(),PolicyType(),Gen()));
+                generalStaticAssumptions.BaseMort(Product(), PolicyType(), Gen()));
         }
     }
 }

@@ -1,27 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data;
-
+﻿
 namespace SimpleLife
 {
     internal class ProjectionOfCF
     {
         //Policy;Product;PolicyType;Gen;Channel;Duration;Sex;IssueAge;PaymentMode;PremFreq;PolicyTerm;MaxPolicyTerm;PolicyCount;SumAssured
+        /// <summary>
+        /// Model point Data Object
+        /// </summary>
         public Policy ModelPoint { get; set; }
+        /// <summary>
+        /// Economic Scenario Data Object
+        /// </summary>
         public static Economic EconomicScenarios = new Economic(Input.PathScenarios, Input.SchemasScenarios);
-        public ProjectionOfCF(Policy modelPointRow)
+        /// <summary>
+        /// Economic Scenatio ID
+        /// </summary>
+        public int EconomicScenarioID = 0;
+        /// <summary>
+        /// Public constructor
+        /// </summary>
+        /// <param name="modelPointRow">ModelPoint to project</param>
+        /// <param name="economicScenarioID">Economic scenario of the projection</param>
+        public ProjectionOfCF(Policy modelPointRow, int economicScenarioID)
         {
             ModelPoint = modelPointRow;
+            EconomicScenarioID = economicScenarioID;
         }
-
         /// <summary>
         /// Accumulated cachflows
         /// </summary>
+        /// <see cref="AccumCF"/>
+        /// <see cref="IntAccumCF"/>
+        /// <see cref="NetInsurCF"/>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Accumulated cachflows</returns>
         public decimal AccumCF(int t)
         {
             if (t == 0)
@@ -33,6 +45,7 @@ namespace SimpleLife
         /// <summary>
         /// Attainded age at time t
         /// </summary>
+        /// <see cref="Policy.IssueAge"/>
         /// <param name="t"></param>
         /// <returns></returns>
         public int AttAge(int t)
@@ -52,7 +65,7 @@ namespace SimpleLife
         /// Accidental hospitalisation benefits
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Accidental hospitalisation benefits</returns>
         public decimal BenefitAccHosp(int t)
         {
             return SizeBenefitAccDth(t) * PolsAccDeath(t);
@@ -61,7 +74,7 @@ namespace SimpleLife
         /// Annuity benefits
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Annuity benefits</returns>
         public decimal BenefitAnn(int t)
         {
             return SizeBenefitAnn(t) * PolsAnnuity(t);
@@ -70,7 +83,7 @@ namespace SimpleLife
         /// Death benefits
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Death benefits</returns>
         public decimal BenefitDeath(int t)
         {
             return SizeBenefitDeath(t) * PolsDeath(t);
@@ -79,7 +92,7 @@ namespace SimpleLife
         /// Living benefits
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Living benefits</returns>
         public decimal BenefitLiving(int t)
         {
             return SizeBenefitLiving(t) * PolsLiving(t);
@@ -88,7 +101,7 @@ namespace SimpleLife
         /// Maturity benefits
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Maturity benefits</returns>
         public decimal BenefitMat(int t)
         {
             return SizeBenefitMat(t) * PolsMaturity(t);
@@ -97,7 +110,7 @@ namespace SimpleLife
         /// Other benefits
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Other benefits</returns>
         public decimal BenefitOther(int t)
         {
             return SizeBenefitOther(t) * PolsOther(t);
@@ -106,7 +119,7 @@ namespace SimpleLife
         /// Sickness hospitalization benefits
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Sickness hospitalization benefits</returns>
         public decimal BenefitSickHosp(int t)
         {
             return SizeBenefitSickHosp(t) * PolsSickHosp(t);
@@ -115,7 +128,7 @@ namespace SimpleLife
         /// Surgery benefits
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Surgery benefits</returns>
         public decimal BenefitSurg(int t)
         {
             return SizeBenefitSurg(t) * PolsSurg(t);
@@ -124,7 +137,7 @@ namespace SimpleLife
         /// Surrender benefits
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Surrender benefits</returns>
         public decimal BenefitSurr(int t)
         {
             return SizeBenefitSurr(t) * PolsSurr(t);
@@ -133,7 +146,7 @@ namespace SimpleLife
         /// Benefit Total
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Benefit Total</returns>
         public decimal BenefitTotal(int t)
         {
             return (BenefitMat(t)
@@ -151,7 +164,7 @@ namespace SimpleLife
         /// Change in reserve
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Change in reserve</returns>
         public decimal ChangeRsrv(int t)
         {
             return ReserveTotal_End(t + 1) - ReserveTotal_End(t);
@@ -160,7 +173,7 @@ namespace SimpleLife
         /// Acquisition expenses
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Acquisition expenses</returns>
         public decimal ExpsAcq(int t)
         {
             return SizeExpsAcq(t) * (PolsNewBiz(t) + PolsRenewal(t));
@@ -169,7 +182,7 @@ namespace SimpleLife
         /// Commissions and acquisition expenses
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Commissions and acquisition expenses</returns>
         public decimal ExpsAcqTotal(int t)
         {
             return ExpsCommTotal(t) + ExpsAcq(t);
@@ -178,7 +191,7 @@ namespace SimpleLife
         /// Initial expenses commissions
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Initial expenses commissions</returns>
         public decimal ExpsCommInit(int t)
         {
             return SizeExpsCommInit(t) * PolsIF_Beg1(t);
@@ -187,7 +200,7 @@ namespace SimpleLife
         /// Renewal commissions
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Renewal commissions</returns>
         public decimal ExpsCommRen(int t)
         {
             return SizeExpsCommRen(t) * PolsIF_Beg1(t);
@@ -196,7 +209,7 @@ namespace SimpleLife
         /// Commissions Total
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Commissions Total</returns>
         public decimal ExpsCommTotal(int t)
         {
             return ExpsCommInit(t) + ExpsCommRen(t);
@@ -205,7 +218,7 @@ namespace SimpleLife
         /// Maintenance expenses
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Maintenance expenses</returns>
         public decimal ExpsMaint(int t)
         {
             return SizeExpsMaint(t) * PolsIF_Beg1(t);
@@ -214,7 +227,7 @@ namespace SimpleLife
         /// Total maintenance expenses including other expenses
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Total maintenance expenses including other expenses</returns>
         public decimal ExpsMaintTotal(int t)
         {
             return ExpsMaint(t) + ExpsOther(t);
@@ -223,7 +236,7 @@ namespace SimpleLife
         /// Other expenses
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Other expenses</returns>
         public decimal ExpsOther(int t)
         {
             return 0;
@@ -232,7 +245,7 @@ namespace SimpleLife
         /// Total expenses
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Total expenses</returns>
         public decimal ExpsTotal(int t)
         {
             return (ExpsCommInit(t)
@@ -245,7 +258,7 @@ namespace SimpleLife
         /// Income Total
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Income Total</returns>
         public decimal IncomeTotal(int t)
         {
             return PremIncome(t) + InvstIncome(t);
@@ -254,7 +267,7 @@ namespace SimpleLife
         /// Insurance in-force: Beginning of period 1
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Insurance in-force: Beginning of period 1</returns>
         public decimal InsurIF_Beg1(int t)
         {
             return PolsIF_Beg1(t) * SizeSumAssured(t);
@@ -263,7 +276,7 @@ namespace SimpleLife
         /// Insurance in-force: End of period
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Insurance in-force: End of period</returns>
         public decimal InsurIF_End(int t)
         {
             return PolsIF_End(t) * SizeSumAssured(t);
@@ -273,18 +286,18 @@ namespace SimpleLife
         /// Depend on the economic scenarios
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Intrest on accumulated cashflows</returns>
         public decimal IntAccumCF(int t)
         {
             return (AccumCF(t)
             + PremIncome(t)
-            - ExpsTotal(t)) * EconomicScenarios.DiscRate(t);
+            - ExpsTotal(t)) * EconomicScenarios.DiscRate(EconomicScenarioID, t);
         }
         /// <summary>
         /// Investment income
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Investment income</returns>
         public decimal InvstIncome(int t)
         {
             return SizeInvstIncome(t) * PolsIF_Beg1(t);
@@ -293,7 +306,7 @@ namespace SimpleLife
         /// Net liability cashflow
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Net liability cashflow</returns>
         public decimal NetInsurCF(int t)
         {
             return (PremIncome(t)
@@ -304,7 +317,7 @@ namespace SimpleLife
         /// Number of policies: Accidental death
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Number of policies: Accidental death</returns>
         public decimal PolsAccDeath(int t)
         {
             return 0;
@@ -313,24 +326,24 @@ namespace SimpleLife
         /// Number of policies: Accidental Hospitalization
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Number of policies: Accidental Hospitalization</returns>
         public decimal PolsAccHosp(int t) { return 0; }
         /// <summary>
         /// Number of policies: Annuity
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Number of policies: Annuity</returns>
         public decimal PolsAnnuity(int t) { return 0; }
         /// <summary>
         /// Number of policies: Death
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Number of policies: Death</returns>
         public decimal PolsDeath(int t)
         {
             decimal mortFactor = Policy.generalStaticAssumptions.MortFactor(ModelPoint.Product(),
                 ModelPoint.PolicyType(),
-                ModelPoint.Gen(),t);
+                ModelPoint.Gen(), t);
             decimal baseMortRate = ModelPoint.BaseMortRate(AttAge(t));
             return PolsIF_Beg1(t) * baseMortRate * mortFactor;
         }
@@ -338,31 +351,31 @@ namespace SimpleLife
         /// Number of policies: Maturity
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Number of policies: Maturity</returns>
         public decimal PolsIF_AftMat(int t)
-        { 
+        {
             return PolsIF_End(t) - PolsMaturity(t);
         }
         /// <summary>
         /// Number of policies: Beginning of period
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Number of policies: Beginning of period</returns>
         public decimal PolsIF_Beg(int t)
-        { 
+        {
             return PolsIF_AftMat(t);
         }
         /// <summary>
         /// Number of policies: Beginning of period 1
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Number of policies: Beginning of period 1</returns>
         public decimal PolsIF_Beg1(int t) { return PolsIF_Beg(t) + PolsRenewal(t) + PolsNewBiz(t); }
         /// <summary>
         /// Number of policies: End of period
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Number of policies: End of period</returns>
         public decimal PolsIF_End(int t)
         {
             if (t == 0)
@@ -378,13 +391,13 @@ namespace SimpleLife
         /// Number of policies: Living benefits
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Number of policies: Living benefits</returns>
         public decimal PolsLiving(int t) { return 0; }
         /// <summary>
         /// Number of policies: Maturity
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Number of policies: Maturity</returns>
         public decimal PolsMaturity(int t)
         {
             if (t == ModelPoint.PolicyTerm())
@@ -396,7 +409,7 @@ namespace SimpleLife
         /// Number of policies: New business
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Number of policies: New business</returns>
         public decimal PolsNewBiz(int t)
         {
             if (t == 0)
@@ -409,19 +422,19 @@ namespace SimpleLife
         /// Number of policies: Other benefits
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Number of policies: Other benefits wich is 0</returns>
         public decimal PolsOther(int t) { return 0; }
         /// <summary>
         /// Number of policies: Renewal policies
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Number of policies: Renewal policies wich is 0</returns>
         public decimal PolsRenewal(int t) { return 0; }
         /// <summary>
         /// Number of policies: Sickness Hospitalization
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>umber of policies: Sickness Hospitalization with is 0</returns>
         public decimal PolsSickHosp(int t) { return 0; }
         /// <summary>
         /// Number of policies: Surgery
@@ -433,7 +446,7 @@ namespace SimpleLife
         /// Number of policies: Surrender
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Number of policies: Surrender</returns>
         public decimal PolsSurr(int t)
         {
             return PolsIF_Beg1(t) * Policy.generalStaticAssumptions.SurrRate(ModelPoint.Product(),
@@ -444,13 +457,13 @@ namespace SimpleLife
         /// Premium income
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Premium income</returns>
         public decimal PremIncome(int t) { return SizePremium(t) * PolsIF_Beg1(t); }
         /// <summary>
         /// Profit before Tax
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Profit before Tax</returns>
         public decimal ProfitBefTax(int t)
         {
             return (PremIncome(t)
@@ -463,7 +476,7 @@ namespace SimpleLife
         /// Hospitalization reserve: End of period
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Hospitalization reserve: End of period</returns>
         public decimal ReserveHospRsrvEnd(int t)
         {
             return 0;
@@ -472,13 +485,13 @@ namespace SimpleLife
         /// Premium reserve: End of period
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Premium reserve: End of period</returns>
         public decimal ReservePremRsrvEnd(int t) { return SizeReservePremRsrvEnd(t) * PolsIF_End(t); }
         /// <summary>
         /// Total reserve: End of period
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Total reserve: End of period</returns>
         public decimal ReserveTotal_End(int t)
         {
             return (ReservePremRsrvEnd(t)
@@ -489,16 +502,16 @@ namespace SimpleLife
         /// Unearned Premium: End of period
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Unearned Premium: End of period</returns>
         public decimal ReserveUernPremEnd(int t)
         {
             return 0;
         }
         /// <summary>
-        /// Annualized premium per policy at time ``t``
+        /// Annualized premium per policy at time t
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Annualized premium per policy at time t</returns>
         public decimal SizeAnnPrem(int t)
         {
             return SizeSumAssured(t) * ModelPoint.AnnPremRate();
@@ -507,61 +520,61 @@ namespace SimpleLife
         /// Accidental death benefit per policy
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Accidental death benefit per policy</returns>
         public decimal SizeBenefitAccDth(int t) { return 0; }
         /// <summary>
         /// Accidental hospitalization benefit per policy
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Accidental hospitalization benefit per policy</returns>
         public decimal SizeBenefitAccHosp(int t) { return 0; }
         /// <summary>
         /// Annuity benefit per policy
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Annuity benefit per policy</returns>
         public decimal SizeBenefitAnn(int t) { return 0; }
         /// <summary>
         /// Death benefit per policy
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Death benefit per policy</returns>
         public decimal SizeBenefitDeath(int t) { return SizeSumAssured(t); }
         /// <summary>
         /// Living benefit per policy
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Living benefit per policy</returns>
         public decimal SizeBenefitLiving(int t) { return 0; }
         /// <summary>
         /// Maturity benefit per policy
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Maturity benefit per policy</returns>
         public decimal SizeBenefitMat(int t) { return 0; }
         /// <summary>
         /// Other benefit per policy
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Other benefit per policy</returns>
         public decimal SizeBenefitOther(int t) { return 0; }
         /// <summary>
         /// Sickness hospitalization benefit per policy
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Sickness hospitalization benefit per policy</returns>
         public decimal SizeBenefitSickHosp(int t) { return 0; }
         /// <summary>
         /// Surgery benefit per policy
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Surgery benefit per policy</returns>
         public decimal SizeBenefitSurg(int t) { return 0; }
         /// <summary>
         /// Surrender benefit per policy
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Surrender benefit per policy</returns>
         public decimal SizeBenefitSurr(int t)
         {
             return SizeSumAssured(t) * (ModelPoint.CashValueRate(t)
@@ -571,14 +584,14 @@ namespace SimpleLife
         /// Acquisition expense per policy at time t
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Acquisition expense per policy at time t</returns>
         public decimal SizeExpsAcq(int t)
         {
-            decimal inflFactorT = Policy.generalStaticAssumptions.InflFactor(t, ModelPoint.Product(),ModelPoint.PolicyType(),ModelPoint.Gen());
+            decimal inflFactorT = Policy.generalStaticAssumptions.InflFactor(t, ModelPoint.Product(), ModelPoint.PolicyType(), ModelPoint.Gen());
             decimal inflFactor0 = Policy.generalStaticAssumptions.InflFactor(0, ModelPoint.Product(), ModelPoint.PolicyType(), ModelPoint.Gen());
-            decimal expsAcqAnnPrem = Policy.generalStaticAssumptions.ExpsAcqAnnPrem(ModelPoint.Product(),ModelPoint.PolicyType(),ModelPoint.Gen());
-            decimal expsAcqSA = Policy.generalStaticAssumptions.ExpsAcqSA(ModelPoint.Product(),ModelPoint.PolicyType(),ModelPoint.Gen());
-            decimal expsAcqPol = Policy.generalStaticAssumptions.ExpsAcqPol(ModelPoint.Product(),ModelPoint.PolicyType(),ModelPoint.Gen());
+            decimal expsAcqAnnPrem = Policy.generalStaticAssumptions.ExpsAcqAnnPrem(ModelPoint.Product(), ModelPoint.PolicyType(), ModelPoint.Gen());
+            decimal expsAcqSA = Policy.generalStaticAssumptions.ExpsAcqSA(ModelPoint.Product(), ModelPoint.PolicyType(), ModelPoint.Gen());
+            decimal expsAcqPol = Policy.generalStaticAssumptions.ExpsAcqPol(ModelPoint.Product(), ModelPoint.PolicyType(), ModelPoint.Gen());
             if (t == 0)
             {
                 return (SizeAnnPrem(t) * expsAcqAnnPrem + (SizeSumAssured(t) * expsAcqSA + expsAcqPol) * inflFactorT / inflFactor0);
@@ -589,7 +602,7 @@ namespace SimpleLife
         /// Initial commission per policy at time t
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Initial commission per policy at time t</returns>
         public decimal SizeExpsCommInit(int t)
         {
             decimal commInitPrem = Policy.generalStaticAssumptions.CommInitPrem(ModelPoint.Product(),
@@ -606,11 +619,11 @@ namespace SimpleLife
         /// Renewal commission per policy at time t
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Renewal commission per policy at time t</returns>
         public decimal SizeExpsCommRen(int t)
         {
-            decimal CommRenTerm = Policy.generalStaticAssumptions.CommRenTerm(ModelPoint.Product(),ModelPoint.PolicyType(),ModelPoint.Gen());
-            decimal cnsmpTax = Policy.generalStaticAssumptions.CnsmpTax(ModelPoint.Product(),ModelPoint.PolicyType(),ModelPoint.Gen());
+            decimal CommRenTerm = Policy.generalStaticAssumptions.CommRenTerm(ModelPoint.Product(), ModelPoint.PolicyType(), ModelPoint.Gen());
+            decimal cnsmpTax = Policy.generalStaticAssumptions.CnsmpTax(ModelPoint.Product(), ModelPoint.PolicyType(), ModelPoint.Gen());
             if (t == 0)
             { return 0; }
             else if (t < CommRenTerm)
@@ -621,7 +634,7 @@ namespace SimpleLife
         /// Maintenance expense per policy at time t
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Maintenance expense per policy at time t</returns>
         public decimal SizeExpsMaint(int t)
         {
             decimal expsMaintAnnPrem = Policy.generalStaticAssumptions.ExpsMaintAnnPrem(ModelPoint.Product(),
@@ -642,30 +655,30 @@ namespace SimpleLife
         /// Other expenses per policy at time t
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Other expenses per policy at time t</returns>
         public decimal SizeExpsOther(int t) { return 0; }
         /// <summary>
         /// Investment Income per policy from t to t+1.
         /// Depend on the economic scenarios
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Investment Income per policy from t to t+1.</returns>
         public decimal SizeInvstIncome(int t)
         {
-            return (SizeReserveTotalAftMat(t) + SizePremium(t)) * EconomicScenarios.InvstRetRate(t);
+            return (SizeReserveTotalAftMat(t) + SizePremium(t)) * EconomicScenarios.InvstRetRate(EconomicScenarioID, t);
         }
         /// <summary>
         /// Premium income per policy from t to t+1
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Premium income per policy from t to t+1</returns>
         public decimal SizePremium(int t)
         { return SizeSumAssured(t) * ModelPoint.GrossPremRate() * ModelPoint.PremFreq(); }
         /// <summary>
         /// Premium reserve per policy: After maturity
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Premium reserve per policy: After maturity</returns>
         public decimal SizeReservePremRsrvAftMat(int t)
         {
             return SizeSumAssured(t) * ModelPoint.ReserveNLP_Rate("VAL", t);
@@ -674,7 +687,7 @@ namespace SimpleLife
         /// Premium reserve per policy: End of period
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Premium reserve per policy: End of period</returns>
         public decimal SizeReservePremRsrvEnd(int t)
         {
             return SizeSumAssured(t) * ModelPoint.ReserveNLP_Rate("VAL", t);
@@ -683,7 +696,7 @@ namespace SimpleLife
         /// Total reserve per policy: After maturity
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Total reserve per policy: After maturity</returns>
         public decimal SizeReserveTotalAftMat(int t)
         {
             return (SizeReservePremRsrvAftMat(t) + SizeReserveUernPremAftMat(t));
@@ -692,33 +705,33 @@ namespace SimpleLife
         /// Unearned premium: After maturity
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Unearned premium: After maturity</returns>
         public decimal SizeReserveUernPremAftMat(int t)
         {
-            return 0; // SizeSumAssured(t) * polset.UnernPremRate(polset, tt, True)
+            return 0;//SizeSumAssured(t) * polset.UnernPremRate(polset, tt, True)
         }
         /// <summary>
         /// Unearned reserve per policy: End of period
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Unearned reserve per policy: End of period</returns>
         public decimal SizeReserveUernPremEnd(int t)
         {
-            return 0; // SizeSumAssured(t) * pol.UnernPremRate(polset, tt)
+            return 0;//SizeSumAssured(t) * ModelPoint.UnernPremRate(polset, tt)
         }
         /// <summary>
-        /// Sum assured per policy at time ``t``
+        /// Sum assured per policy at time t
         /// </summary>
         /// <param name="t"></param>
-        /// <returns></returns>
+        /// <returns>Sum assured per policy at time t</returns>
         public decimal SizeSumAssured(int t)
         {
             return (decimal)ModelPoint.SumAssured();
         }
         /// <summary>
-        /// ultimate projection time t
+        /// ultimate projection time.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>ultimate projection time.</returns>
         public decimal last_t()
         {
             int tid = Policy.generalStaticAssumptions.BaseMort(ModelPoint.Product(), ModelPoint.PolicyType(), ModelPoint.Gen());

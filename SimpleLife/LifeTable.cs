@@ -10,9 +10,20 @@ namespace SimpleLife
 {
     public class LifeTable
     {
+        /// <summary>
+        /// mortality table data
+        /// </summary>
         public DataTable MortalityTable { get; set; }
+        /// <summary>
+        /// technical interest rate
+        /// </summary>
         public decimal TechnicalInterestRate { get; set; }
-
+        /// <summary>
+        /// public constructor
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="schema"></param>
+        /// <param name="interestRate"></param>
         public LifeTable(string path, string schema, decimal interestRate)
         {
             MortalityTable = DataFromCsv.ReadDataTableFromCsv(path, schema);
@@ -28,7 +39,7 @@ namespace SimpleLife
         /// <param name="tableID"></param>
         /// <param name="k">(int, optional, default=0) number of split payments in a year</param>
         /// <param name="f">(int, optional, default=0) waiting period in years</param>
-        /// <returns></returns>
+        /// <returns>AnnDuenx</returns>
         public decimal AnnDuenx(int x, int n, string sex, int tableID, int k=1, int f = 0)
         {
             if (Dx(x, sex, tableID) == 0)
@@ -57,7 +68,7 @@ namespace SimpleLife
         /// <param name="sex"></param>
         /// <param name="tableID"></param>
         /// <param name="f">(int, optional, default=0) waiting period in years</param>
-        /// <returns></returns>
+        /// <returns>AnnDuex</returns>
         public decimal AnnDuex(int x, int k, string sex, int tableID, int f = 0)
         {
             if (Dx(x, sex, tableID) == 0)
@@ -85,7 +96,7 @@ namespace SimpleLife
         /// <param name="sex"></param>
         /// <param name="tableID"></param>
         /// <param name="f">(int, optional, default=0) waiting period in years</param>
-        /// <returns></returns>
+        /// <returns>Ax</returns>
         public decimal Ax(int x, string sex, int tableID, int f=0)
         {
             if (Dx(x, sex, tableID) == 0)
@@ -106,7 +117,7 @@ namespace SimpleLife
         /// <param name="sex"></param>
         /// <param name="tableID"></param>
         /// <param name="f">(int, optional, default=0) waiting period in years</param>
-        /// <returns></returns>
+        /// <returns>Axn</returns>
         public decimal Axn(int x, int n,string sex, int tableID,int f = 0)
         {
             if (Dx(x, sex, tableID) == 0)
@@ -125,7 +136,7 @@ namespace SimpleLife
         /// <param name="x">(int) Age</param>
         /// <param name="sex"></param>
         /// <param name="tableID"></param>
-        /// <returns></returns>
+        /// <returns>Cx</returns>
         public decimal Cx(int x, string sex, int tableID)
         {
             double discount = ((double)disc());
@@ -138,7 +149,7 @@ namespace SimpleLife
         /// <param name="x"></param>
         /// <param name="sex"></param>
         /// <param name="tableID"></param>
-        /// <returns></returns>
+        /// <returns>Dx</returns>
         public decimal Dx(int x, string sex, int tableID)
         {
             double discount = ((double)disc());
@@ -152,7 +163,7 @@ namespace SimpleLife
         /// <param name="n"></param>
         /// <param name="sex"></param>
         /// <param name="tableID"></param>
-        /// <returns></returns>
+        /// <returns>the Exn</returns>
         public decimal Exn(int x, int n, string sex, int tableID)
         {
             if (Dx(x, sex, tableID) == 0)
@@ -171,7 +182,7 @@ namespace SimpleLife
         /// <param name="x"></param>
         /// <param name="sex"></param>
         /// <param name="tableID"></param>
-        /// <returns></returns>
+        /// <returns>the Mx</returns>
         public decimal Mx(int x, string sex, int tableID)
         {
             if (x >= 110)
@@ -190,7 +201,7 @@ namespace SimpleLife
         /// <param name="x"></param>
         /// <param name="sex"></param>
         /// <param name="tableID"></param>
-        /// <returns></returns>
+        /// <returns>the Nx</returns>
         public decimal Nx(int x, string sex, int tableID)
         {
             if (x >= 110)
@@ -206,7 +217,7 @@ namespace SimpleLife
         /// <summary>
         /// The discount factor v = 1/(1 + i) with i the technical interest rate
         /// </summary>
-        /// <returns></returns>
+        /// <returns>technical discount factor</returns>
         public decimal disc()
         {
             return 1 / (1 + TechnicalInterestRate);
@@ -218,7 +229,7 @@ namespace SimpleLife
         /// <param name="x"></param>
         /// <param name="sex"></param>
         /// <param name="tableID"></param>
-        /// <returns></returns>
+        /// <returns>dx of the mortality table</returns>
         public decimal dx(int x, string sex, int tableID)
         {
             return lx(x, sex, tableID) * qx(x, sex, tableID);
@@ -230,7 +241,7 @@ namespace SimpleLife
         /// <param name="x"></param>
         /// <param name="sex"></param>
         /// <param name="tableID"></param>
-        /// <returns></returns>
+        /// <returns>lx of the mortality table</returns>
         public decimal lx(int x, string sex, int tableID)
         {
             if (x == 0)
@@ -264,7 +275,7 @@ namespace SimpleLife
         /// </summary>
         /// <param name="sex"></param>
         /// <param name="tableID"></param>
-        /// <returns></returns>
+        /// <returns>min Age that Qx is 1</returns>
         public int LastAge(string sex, int tableID)
         {
             var la = from mt in MortalityTable.AsEnumerable()

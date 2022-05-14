@@ -4,6 +4,9 @@ namespace SimpleLife
 {
     internal class ProductSpecifications
     {
+        /// <summary>
+        /// Product specification dataTable
+        /// </summary>
         public DataTable ProductSpecTable { get; set; }
         /// <summary>
         /// Public constructor
@@ -15,13 +18,13 @@ namespace SimpleLife
             ProductSpecTable = DataFromCsv.ReadDataTableFromCsv(PathProductSpec, SchemasProductSpec);
         }
         /// <summary>
-        /// Permet de lancer une requete sur la table Assumption
+        /// Result of a query on product specification dataTable at the grain : PRODUCT x POLTYPE x GEN
         /// </summary>
         /// <param name="assumption"></param>
         /// <param name="product"></param>
         /// <param name="productType"></param>
         /// <param name="generation"></param>
-        /// <returns></returns>
+        /// <returns>An assumption from the product specification dataTable at the grain : PRODUCT x POLTYPE x GEN</returns>
         public dynamic? ProductSpecTableQuery(string specification, string product, int policyType, int generation)
         {
             var r = from i in ProductSpecTable.AsEnumerable()
@@ -29,11 +32,10 @@ namespace SimpleLife
                     select i.Field<dynamic>(specification);
             return r.FirstOrDefault();
         }
-
         /// <summary>
-        /// Initial Surrender Charge Rate
+        /// Initial Surrender Charge Rate from the product specification
         /// </summary>
-        /// <returns></returns>
+        /// <returns>the init surrender charge from the product specification</returns>
         public decimal InitSurrCharge(string product, int policyType, int generation, int policyTerm)
         {
             decimal param1 = ProductSpecTableQuery("SurrChargeParam1", product, policyType, generation);
@@ -41,11 +43,11 @@ namespace SimpleLife
             return param1 + param2 * System.Math.Min(policyTerm / 10, 1);
         }
         /// <summary>
-        /// Interest Rate
+        /// Interest Rate from the product specification
         /// </summary>
         /// <param name="ratebasis"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
+        /// <returns>Interest rate from the product specification</returns>
+        /// <exception cref="Exception">when rate basis is not "PREM" or "VAL"</exception>
         public decimal IntRate(string ratebasis, string product, int policyType, int generation)
         {
             string basis;
@@ -59,9 +61,9 @@ namespace SimpleLife
             return result;
         }
         /// <summary>
-        /// Acquisition Loading per Sum Assured
+        /// Acquisition Loading per Sum Assured from product specification
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Acquisition Loading per Sum Assured from product specification</returns>
         public decimal LoadAcqSA(string product, int policyType, int generation, int policyTerm)
         {
             decimal param1 = ProductSpecTableQuery("LoadAcqSAParam1", product, policyType, generation);
@@ -69,36 +71,36 @@ namespace SimpleLife
             return param1 + param2 * System.Math.Min(policyTerm / 10, 1);
         }
         /// <summary>
-        /// Maintenance Loading per Gross Premium
+        /// Maintenance Loading per Gross Premium from product specification
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Maintenance Loading per Gross Premium from product specification</returns>
         public decimal LoadMaintPrem(string product, int policyType, int generation)
         {
             return ProductSpecTableQuery("LoadMaintPremParam1", product, policyType, generation);
         }
         /// <summary>
-        /// Maintenance Loading per Sum Assured during Premium Payment
+        /// Maintenance Loading per Sum Assured during Premium Payment from product specification
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Maintenance Loading per Sum Assured during Premium Payment from product specification</returns>
         public decimal LoadMaintSA(string product, int policyType, int generation)
         {
             decimal result = ProductSpecTableQuery("LoadMaintSA", product, policyType, generation);
             return result;
         }
         /// <summary>
-        /// Maintenance Loading per Sum Assured after Premium Payment
+        /// Maintenance Loading per Sum Assured after Premium Payment from product specification
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Maintenance Loading per Sum Assured after Premium Payment from product specification</returns>
         public decimal LoadMaintSA2(string product, int policyType, int generation)
         {
             decimal result = ProductSpecTableQuery("LoadMaintSA2", product, policyType, generation);
             return result;
         }
         /// <summary>
-        /// Mortality Table ID to use for the current model point
+        /// Mortality Table ID to use for the current model point from product specification
         /// </summary>
         /// <param name="ratebasis"></param>
-        /// <returns></returns>
+        /// <returns>Mortality Table ID to use for the current model point from product specification</returns>
         /// <exception cref="Exception"></exception>
         public int TableID(string ratebasis, string product, int policyType, int generation)
         {
