@@ -16,7 +16,7 @@ namespace SimpleLife
         /////////////////////////////////////////////////////////////ok
         public static string PathParamAssumptions = @"C:\Users\work\source\repos\ActuarialModellingInCSharp\SimpleLife\Data\assumption.csv";
         public static string SchemasParamAssumptions = @"{""Product"": ""string"",
-                                                            ""PolType"": ""string"",
+                                                            ""PolType"": ""int"",
                                                             ""Gen"": ""int"",
                                                             ""BaseMort"": ""int"",
                                                             ""MortFactor"": ""string"",

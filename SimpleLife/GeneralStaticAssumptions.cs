@@ -184,7 +184,7 @@ namespace SimpleLife
             var r = from i in AssumtionTable.AsEnumerable()
                     where i.Field<int>("Year") == year
                     select i.Field<decimal>(column);
-            return (decimal)column.FirstOrDefault();
+            return (decimal)r.FirstOrDefault();
         }
         /// <summary>
         /// Surrender Rate from assumption parameter table

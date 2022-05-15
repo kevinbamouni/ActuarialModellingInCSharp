@@ -2,7 +2,7 @@
 
 namespace SimpleLife
 {
-    internal class Economic
+    public class Economic
     {
         /// <summary>
         /// DataTable : Hold the economic scenarios of the projections
