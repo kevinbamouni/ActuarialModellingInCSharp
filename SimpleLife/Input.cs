@@ -43,8 +43,8 @@ namespace SimpleLife
         /////////////////////////////////////////////////////////////ok
         public static string PathProductSpec = @"C:\Users\work\source\repos\ActuarialModellingInCSharp\SimpleLife\Data\productspec.csv";
         public static string SchemasProductSpec = @"{""Product"": ""string"",
-                                                    ""PolType"": ""string"",
-                                                    ""Gen"": ""string"",
+                                                    ""PolType"": ""int"",
+                                                    ""Gen"": ""int"",
                                                     ""LoadAcqSAParam1"": ""decimal"",
                                                     ""LoadAcqSAParam2"": ""decimal"",
                                                     ""LoadMaintSA"": ""decimal"",
@@ -53,8 +53,8 @@ namespace SimpleLife
                                                     ""LoadMaintPremParam2"": ""decimal"",
                                                     ""SurrChargeParam1"": ""decimal"",
                                                     ""SurrChargeParam2"": ""decimal"",
-                                                    ""MortTablePrem"": ""decimal"",
-                                                    ""MortTableVal"": ""decimal"",
+                                                    ""MortTablePrem"": ""int"",
+                                                    ""MortTableVal"": ""int"",
                                                     ""IntRatePrem"": ""decimal"",
                                                     ""IntRateVal"": ""decimal"",
                                                     ""LapseRatePrem"": ""decimal"",

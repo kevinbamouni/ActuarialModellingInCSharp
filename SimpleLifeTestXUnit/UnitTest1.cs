@@ -135,8 +135,61 @@ namespace SimpleLifeTestXUnit
         public void EconomicAssumptioTest_NumberOfEconomicScenarios()
         {
             Economic gsa = new Economic(Input.PathScenarios, Input.SchemasScenarios);
-            int? nb = (int?)gsa.NumberOfEconomicScenarios();
+            int? nb = gsa.NumberOfEconomicScenarios();
             Assert.Equal(10, nb);
         }
+
+        [Fact]
+        public void ProductSpecifications_TableID1()
+        {
+            ProductSpecifications gsa = new ProductSpecifications(Input.PathProductSpec, Input.SchemasProductSpec);
+            int? nb = gsa.TableID("PREM","TERM",1,1);
+            Assert.Equal(3, nb);
+        }
+        [Fact]
+        public void ProductSpecifications_TableID2()
+        {
+            ProductSpecifications gsa = new ProductSpecifications(Input.PathProductSpec, Input.SchemasProductSpec);
+            int? nb = gsa.TableID("VAL", "TERM", 1, 1);
+            Assert.Equal(1, nb);
+        }
+
+        [Fact]
+        public void ProductSpecifications_LoadMaintSA2()
+        {
+            ProductSpecifications gsa = new ProductSpecifications(Input.PathProductSpec, Input.SchemasProductSpec);
+            decimal? nb = gsa.LoadMaintSA2("TERM", 1, 1);
+            Assert.Equal(0, nb);
+        }
+
+        [Fact]
+        public void ProductSpecifications_LoadMaintPremParam1()
+        { 
+            ProductSpecifications gsa = new ProductSpecifications(Input.PathProductSpec, Input.SchemasProductSpec);
+            decimal? nb = gsa.LoadMaintPrem("TERM", 1, 1);
+            Assert.Equal(0.03m, nb);
+        }
+        [Fact]
+        public void ProductSpecifications_IntRate()
+        {
+            ProductSpecifications gsa = new ProductSpecifications(Input.PathProductSpec, Input.SchemasProductSpec);
+            decimal? nb = gsa.IntRate("PREM", "TERM", 1, 1);
+            Assert.Equal(0.015m, nb);
+        }
+        [Fact]
+        public void ProductSpecifications_LoadAcqSA()
+        {
+            ProductSpecifications gsa = new ProductSpecifications(Input.PathProductSpec, Input.SchemasProductSpec);
+            decimal? nb = gsa.LoadAcqSA("WL", 1, 1,10);
+            Assert.Equal(0.03m, nb);
+        }
+        [Fact]
+        public void ProductSpecifications_InitSurrCharge()
+        {
+            ProductSpecifications gsa = new ProductSpecifications(Input.PathProductSpec, Input.SchemasProductSpec);
+            decimal? nb = gsa.InitSurrCharge("WL", 1, 1, 10);
+            Assert.Equal(0.015m, nb);
+        }
+
     }
 }

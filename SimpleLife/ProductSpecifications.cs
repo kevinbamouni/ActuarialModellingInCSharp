@@ -2,7 +2,7 @@
 
 namespace SimpleLife
 {
-    internal class ProductSpecifications
+    public class ProductSpecifications
     {
         /// <summary>
         /// Product specification dataTable
@@ -57,7 +57,7 @@ namespace SimpleLife
             { basis = "IntRateVal"; }
             else
             { throw new Exception("Policy.IntRate(string ratebasis) : param ratebasis value error; must be 'PREM' or 'VAL' "); }
-            int result = ProductSpecTableQuery(basis, product, policyType, generation);
+            decimal result = ProductSpecTableQuery(basis, product, policyType, generation);
             return result;
         }
         /// <summary>
